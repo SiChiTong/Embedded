@@ -1,29 +1,38 @@
-#ifndef __servo_top_H__
-#define __servo_top_H__
+#ifndef SERVO_TOP_H
+#define SERVO_TOP_H
 
 #include "servo_config.h"
-#include "servo_digital_driver.h"
+#include "servo_digital.h"
 
-typedef struct ROBOT_HEAD{
-	float  Pitch;
-	float  Yaw;} ROBOT_HEAD;
-
-class SERVO_TOP:public SERVO_D
+class ServoTop:public ServoDigital
 {
-	public:
-	unsigned char Set_Head_State_Renew,Read_Head_State_Renew;
-	ROBOT_HEAD  Expect_Head_State , Mesure_Head_State;                  
-	SERVO_TOP();
-	void Init(void);
-	void Head_Top_Call(void);
-	private:
-	void Set_State(float Pitch , float Yaw);
-	void Get_State(float *Pitch , float *Yaw);
+public:
+    ServoTop()
+    {
+        set_head_state_renew=0;
+        read_head_state_renew=0;
+        expect_head_pitch=0;
+        expect_head_yaw=0;
+        measure_head_pitch=0;
+        measure_head_yaw=0;
+        first_call=0;
+    }
+    void init(void);
+    void headTopCall(void);
+public:
+    unsigned char set_head_state_renew , read_head_state_renew;
+    float   expect_head_pitch , expect_head_yaw;
+    float   measure_head_pitch , measure_head_yaw;
+
+private:
+    unsigned char first_call;
+    void setState(float pitch , float yaw);
+    void getState(float* pitch , float* yaw);
 };
 
-extern SERVO_TOP hf_head;
+extern ServoTop hf_head;
 
-#endif
+#endif // #ifndef SERVO_TOP_H
 
 
 

@@ -14,39 +14,47 @@
 *
 * Description:   syetem include  file
 ***********************************************************************************************************************/
-#ifndef __main_includes_H__
-#define __main_includes_H__
+#ifndef MAIN_INCLUDES_H
+#define MAIN_INCLUDES_H
 
 /*******************************************************processor.h****************************************************/
 #include "BSP_TOP.h"
 
 /******************************************************package.h*******************************************************/
-#ifdef LIB_Math
+#ifdef LIB_COMMON
+#include "queue.h"
+#endif
+
+#ifdef LIB_ROBOT_ABSTRACT
+#include "robot_abstract.h"
+#endif
+
+#ifdef LIB_MATH
 #include "base_math_top.h"
 #endif
 
-#ifdef Driver_IMU
+#ifdef DRIVER_IMU
 #include "imu_top.h"
 #endif
 
-#ifdef Driver_Motor_Contorl
+#ifdef DRIVER_MOTOR
 #include "motor_top.h"
 #endif
 
-#ifdef Driver_Servo
+#ifdef DRIVER_SERVO
 #include "servo_top.h"
 #endif
 
-#ifdef LIB_Robot_Wheel
+#ifdef LIB_ROBOT_WHEEL
 #include "robot_wheel_top.h"
 #endif
 
-#ifdef LIB_HF_Link
+#ifdef LIB_HF_LINK
 #include "hf_link.h"
 #endif
 
-#ifdef LIB_Sbus_Ppm
-#include "sbus_ppm_driver.h"
+#ifdef LIB_SBUS_PPM
+#include "sbus_ppm.h"
 #endif
 /**********************************************************************************************************************/
 
@@ -74,7 +82,7 @@
 /**********************************************************************************************************************/
 
 
-#endif
+#endif // #ifndef MAIN_INCLUDES_H
 
 
 

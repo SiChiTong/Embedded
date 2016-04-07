@@ -15,8 +15,8 @@
 *
 ***********************************************************************************************************************/
 
-#ifndef __base_math_config_H__
-#define __base_math_config_H__
+#ifndef BASE_MATH_CONFIG_H
+#define BASE_MATH_CONFIG_H
 
 #include "main_config.h"
 
@@ -25,7 +25,7 @@
 #define  BASE_MATH_MATRIX_EN     				1u      //是否编译math_matrix
 #define  BASE_MATH_TRIGONOMETRIC_EN			1u			//是否编译math_trigonometric
 
-#endif
+#endif // #ifndef BASE_MATH_CONFIG_H
 
 
 

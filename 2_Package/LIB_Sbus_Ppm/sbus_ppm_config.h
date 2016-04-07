@@ -15,22 +15,11 @@
 *
 ***********************************************************************************************************************/
 
-#ifndef __sbus_ppm_config_H__
-#define __sbus_ppm_config_H__
+#ifndef SBUS_PPM_CONFIG_H
+#define SBUS_PPM_CONFIG_H
 
 #include "main_config.h"
 #include "BSP_TOP.h"
 
-#ifndef LIB_Robot_Wheel
-#error "!!! the LIB_Sbus_Ppm package must dependent on LIB_Robot_Wheel package at least"
-#endif
-
-#ifdef LIB_Robot_Wheel
-#include "robot_wheel_top.h"
-#endif
-#ifdef    Driver_Servo
-#include "servo_top.h"
-#endif
-
-#endif    //#ifndef __sbus_ppm_config_H__
+#endif // #ifndef SBUS_PPM_CONFIG_H
 

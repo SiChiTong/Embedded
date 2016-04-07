@@ -1,5 +1,5 @@
-#ifndef __uasrt_H__
-#define __uasrt_H__
+#ifndef USART_H
+#define USART_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,7 +9,6 @@ extern "C" {
 #include "stdarg.h"	 	 
 #include "stdio.h"	 	 
 #include "string.h"	 
-#include "main_config.h"
 
 
 //Initilaize the serial, First Parameter:USART1,USART2,USART3; 2nd Para:bits rate; 3rd: IO reuse
@@ -23,6 +22,6 @@ void USART_printf(USART_TypeDef* USARTx, uint8_t *Data, ...);  //format output a
 }
 #endif 
 
-#endif //__usart_H__
+#endif // #ifndef USART_H
 
 

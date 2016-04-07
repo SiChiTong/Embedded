@@ -12,10 +12,12 @@
 * <author>      <time>      <version>      <desc>
 * mawenke       2015.10.1   V1.0           creat this file
 *
-* Description: This file defined hands_free_robot simple communications protocol
-*              please read Hands Free Link Manua.doc for detail
+* Description: 
+*              
 ***********************************************************************************************************************/
 #include "queue.h"
+
+Queue usart1_queue;
 
 Queue::Queue()
 {
@@ -24,12 +26,12 @@ Queue::Queue()
     tail=0;
 }
 
-void Queue::Queue_Init(void)
+void Queue::queueInit(void)
 {
     
 }
 
-unsigned char Queue::get_data(void)
+unsigned char Queue::getData(void)
 {
     unsigned char data;
     data = arr[head];
@@ -38,14 +40,14 @@ unsigned char Queue::get_data(void)
     return data;
 }
 
-void Queue::put_data(unsigned char ch)
+void Queue::putData(unsigned char ch)
 {
     arr[tail] = ch;
     tail++;
     if(tail >= QUEUE_SIZE) tail=0;
 }
 
-unsigned char Queue::empty_check(void)
+unsigned char Queue::emptyCheck(void)
 {
     if( head == tail )
         return 1;
@@ -53,7 +55,7 @@ unsigned char Queue::empty_check(void)
         return 0;
 }
 
-unsigned char Queue::full_check(void)
+unsigned char Queue::fullCheck(void)
 {
     if( tail + 1 == head )
         return 1;

@@ -22,7 +22,7 @@
 #include "main_config.h"
 #include "BSP_TOP.h"
 
-#ifdef LIB_Math
+#ifdef LIB_MATH
 #include "base_math_top.h"
 #endif
 

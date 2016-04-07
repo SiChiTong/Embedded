@@ -6,7 +6,6 @@ extern "C" {
 #endif 
 
 #include "stm32f4xx.h"
-#include "main_config.h"
 
 void HF_IWDG_Init(void);
 void HF_IWDG_Feed(void);

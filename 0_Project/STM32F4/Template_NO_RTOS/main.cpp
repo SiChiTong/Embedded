@@ -31,7 +31,6 @@
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void System_Init(void)
 {
@@ -47,6 +46,7 @@ int main(void)
 {
 
     System_Init();
+
     printf("app start \r\n");
     while(1)
     {
@@ -80,5 +80,5 @@ int main(void)
         }
 
     }
-
+  
 }

@@ -15,19 +15,16 @@
 *
 ***********************************************************************************************************************/
 
-#ifndef __Servo_config_H__
-#define __Servo_config_H__
+#ifndef SERVO_CONFIG_H
+#define SERVO_CONFIG_H
 
 #include "main_config.h"
 #include "BSP_TOP.h"
 
-//数字舵机把位置分成1024等分,取值 0~0X3FF,逆时针为正
-//HEAD  Pitch>0 抬头   ; Pitch<0 低头 ; YAW>0 左转  ; YAW<0 右转
+//the AX digital servo pose be divided into 1024 unit 0~0X3FF
+//counterclockwise is positive
+//HEAD  Pitch>0 Look up  ; Pitch<0 Look down ; YAW>0 Look left  ; YAW<0 Look right
+#define SERVO_DEBUG_EN     0u      // printf debug info
 
-#define SYSTEM_SUPPORT_Servo_Digital   1u     //是否编译数字舵机控制代码
-#define SYSTEM_SUPPORT_Servo_Analog    1u     //是否编译模拟舵机控制代码
-
-#define SYSTEM_SUPPORT_Servo_Debug     0u      //是否使能printf 打印调试信息
-
-#endif   //#ifndef __Servo_config_H__
+#endif   // #ifndef SERVO_CONFIG_H
 

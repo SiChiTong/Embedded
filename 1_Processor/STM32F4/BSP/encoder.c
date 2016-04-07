@@ -26,8 +26,6 @@ extern "C" {
 
 ENCODER_Data encoder_data_r;
 
-#if BSP_CFG_ENCODER_EN > 0u 
-
 #define Encoder_IRQ_MDE_EN   0
 
 /***********************************************************************************************************************
@@ -44,7 +42,6 @@ ENCODER_Data encoder_data_r;
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_Encoder_Init(TIM_TypeDef* TIMx , unsigned char GPIO_AF)	
 {
@@ -254,8 +251,6 @@ void TIM4_IRQHandler(void)
 }
 
 #endif
-
-#endif  //#if BSP_CFG_ENCODER_EN > 0u 
 
 #ifdef __cplusplus
 }

@@ -37,8 +37,6 @@ extern "C" {
 
 ADC_DAC_Data adc_dac_data_r;
 
-#if BSP_CFG_ADC_DAC_EN  > 0u	
-
 /***********************************************************************************************************************
 ***                                                                                                                  ***
 ***                                        ADC Initialization                                                        ***
@@ -63,8 +61,6 @@ ADC_DAC_Data adc_dac_data_r;
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
-* by  lidexin 2016.1.10  GPIO clock config
 ***********************************************************************************************************************/
 static void ADC_GPIO_Config(void)
 {
@@ -179,9 +175,6 @@ static void ADC_GPIO_Config(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
-* by  lidexin 2016.1.10 configure working mode of ADC in MDA mode
-* by  Lidexin 2016.1.16 debug the DMA
 ***********************************************************************************************************************/
 static void ADC_Mode_Config(void)
 {
@@ -327,7 +320,6 @@ static void ADC_Mode_Config(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_ADC_Moder_Init(void)
 {
@@ -349,7 +341,6 @@ void HF_ADC_Moder_Init(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_ADC_Data_Anl(void)
 {
@@ -381,7 +372,6 @@ void HF_ADC_Data_Anl(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_Dac_Init(unsigned int DAC_Channel_x)
 {
@@ -441,7 +431,6 @@ void HF_Dac_Init(unsigned int DAC_Channel_x)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_Dac_Set_Vol(unsigned int DAC_Channel_x , unsigned  short int  vol) 
 {  
@@ -458,7 +447,6 @@ void HF_Dac_Set_Vol(unsigned int DAC_Channel_x , unsigned  short int  vol)
     }
 }
 
-#endif    // #if BSP_CFG_ADC_DAC_EN  > 0u	
 
 #ifdef __cplusplus
 }

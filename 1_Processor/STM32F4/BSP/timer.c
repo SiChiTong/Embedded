@@ -27,9 +27,6 @@ extern "C" {
 #include "timer.h"
 #include "nvic.h"
 
-
-#if BSP_CFG_TIMER_EN > 0u	
-
 /***********************************************************************************************************************
 * Function:     HF_Timer_Init(TIM_TypeDef* TIMx , int Time_us)
 *
@@ -46,7 +43,6 @@ extern "C" {
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_Timer_Init(TIM_TypeDef* TIMx , int Time_us)
 {
@@ -133,7 +129,6 @@ void HF_Timer_Init(TIM_TypeDef* TIMx , int Time_us)
     TIM_Cmd(TIMx , ENABLE);
 }	
 
-#endif  //#if BSP_CFG_TIMER_EN > 0u	
 
 #ifdef __cplusplus
 }

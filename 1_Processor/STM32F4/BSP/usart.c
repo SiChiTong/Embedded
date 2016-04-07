@@ -22,8 +22,6 @@ extern "C" {
 #include "usart.h"
 #include "nvic.h"
 
-#if BSP_CFG_USART_EN > 0u	 
-
 /***********************************************************************************************************************
 ***                                                                                                                  ***
 ***                                  USART Interruption Configuration                                                ***
@@ -113,7 +111,6 @@ extern "C" {
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_Usart_Init(USART_TypeDef* USARTx , unsigned int BaudRate , unsigned char GPIO_AF)
 {
@@ -283,7 +280,6 @@ void HF_Usart_Init(USART_TypeDef* USARTx , unsigned int BaudRate , unsigned char
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void Usart_Put_Char(USART_TypeDef* USARTx  , unsigned char Tx_Byte)
 {
@@ -305,7 +301,6 @@ void Usart_Put_Char(USART_TypeDef* USARTx  , unsigned char Tx_Byte)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 #ifdef __cplusplus                      //if use C++ compiler   
 
@@ -373,7 +368,6 @@ int fputc(int ch, FILE *f)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 static char *itoa(int value, char *string, int radix)
 {
@@ -441,7 +435,6 @@ static char *itoa(int value, char *string, int radix)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void USART_printf(USART_TypeDef* USARTx, uint8_t *Data,...)
 {
@@ -506,99 +499,6 @@ void USART_printf(USART_TypeDef* USARTx, uint8_t *Data,...)
         while( USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET );
     }
 }
-
-
-/****************************************************************************
-* Function:     void Packet_Reply(USART_TypeDef* USARTx,unsigned char * data, unsigned short int length)
-* Scope:        public
-* Description:  USARTx, send serials of data
-* Calls: 
-* Called By: 
-* Table Accessed: 
-* Table Updated: 
-* Input:  
-* Output:
-* Return: 
-* Others:
-* History: 
-* by  mawenke 2015.12.1
-****************************************************************************/	
-void Packet_Reply(USART_TypeDef* USARTx,unsigned char* data, unsigned short int length)
-{
-    //send effective data
-    unsigned char j=0,check_sum=0;
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, 0xff);
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, 0xff);
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, 0x04);
-    check_sum=check_sum+0x04;
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, 0x69);
-    check_sum=check_sum+0x69;
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, (unsigned char)(length>>8));
-    check_sum=check_sum+(unsigned char)(length>>8);
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, (unsigned char)(length&0xff));
-    check_sum=check_sum+(unsigned char)(length&0xff);
-    for (j = 0; j < length; j++)
-    {
-        while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-        USART_SendData(USARTx, *(data + j));
-        check_sum=check_sum+*(data + j);
-    }
-    while (USART_GetFlagStatus(USARTx, USART_FLAG_TXE) == RESET);
-    USART_SendData(USARTx, check_sum);
-}
-
-
-
-
-/***********************************************************************************************************************
-***                                                                                                                  ***
-***                                           Initerrupt Function                                                    ***
-***                                                                                                                  ***
-***********************************************************************************************************************/
-
-//void USART1_IRQHandler(void) 
-//{
-
-//	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-//	{ 
-//	//data = USART_ReceiveData(USART1);				  
-//		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-//	} 			 
-
-//}
-
-
-//void USART2_IRQHandler(void) 
-//{
-
-//	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
-//	{ 
-//	//data = USART_ReceiveData(USART2);				  
-//		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-//	} 			 
-
-//}
-
-
-//void USART3_IRQHandler(void) 
-//{
-
-//	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-//	{
-//    GPS_Usart_IRQ( USART_ReceiveData(USART3) ) ;		
-//		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
-//	} 	
-
-//}
-
-
-#endif  //#if BSP_CFG_USART_EN > 0u	 
 
 #ifdef __cplusplus
 }

@@ -41,7 +41,7 @@ BASE_MATH_MATRIX::BASE_MATH_MATRIX(void)
 * History:
 * by   chenyingbing  2015.12.1   creat
 ***********************************************************************************************************************/
-void BASE_MATH_MATRIX::MatrixAdd( float *fMatrixA,float *fMatrixB,float *Result,
+void BASE_MATH_MATRIX::MatrixAdd( float* fMatrixA,float* fMatrixB,float* Result,
                                   unsigned int m,unsigned int n )
 {
     unsigned int index_i = 0;
@@ -73,7 +73,7 @@ void BASE_MATH_MATRIX::MatrixAdd( float *fMatrixA,float *fMatrixB,float *Result,
 * History:
 * by   chenyingbing  2015.12.1   creat
 ***********************************************************************************************************************/
-void BASE_MATH_MATRIX::MatrixSub( float *fMatrixA,float *fMatrixB,float *Result,
+void BASE_MATH_MATRIX::MatrixSub( float* fMatrixA,float* fMatrixB,float* Result,
                                   unsigned int m,unsigned int n )
 {
     unsigned int index_i = 0;
@@ -186,7 +186,7 @@ void BASE_MATH_MATRIX::MatrixTranspose(float* fMatrixA,unsigned int m,unsigned n
 * History:
 * by   chenyingbing  2015.12.1   creat
 ***********************************************************************************************************************/
-float BASE_MATH_MATRIX::Matrix_Getdet(float *matrix_calculate, float *matrix_copyspace,int n)
+float BASE_MATH_MATRIX::Matrix_Getdet(float* matrix_calculate, float* matrix_copyspace,int n)
 {
     int i,j,k,is,js,l,u,v;
     float f,q,d;
@@ -270,7 +270,7 @@ float BASE_MATH_MATRIX::Matrix_Getdet(float *matrix_calculate, float *matrix_cop
 * History:
 * by   chenyingbing  2015.12.1   creat
 ***********************************************************************************************************************/
-void BASE_MATH_MATRIX::Matrix_Inverse(float *matrix_in,float *matrix_inverse,int n)
+void BASE_MATH_MATRIX::Matrix_Inverse(float* matrix_in,float* matrix_inverse,int n)
 {
     int i = 0;
     int j = 0;

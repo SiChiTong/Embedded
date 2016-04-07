@@ -5,7 +5,7 @@
 extern "C" {
 #endif 
 
-#define Hardware_Platform    4                  //The value 4 means using STM32F4 Processor,and 1 means using STM32F1 Processor
+#define HARDWARE_PLATFORM   4                  //The value 4 means using STM32F4 Processor,and 1 means using STM32F1 Processor
 
 #include "stm32f4xx.h"
 #include "delay.h"
@@ -33,7 +33,7 @@ extern "C" {
 typedef struct System_Data{   // some flags of system
     float System_Time;        //system working time (unit:us), start after power-on
     float CPU_Temperature;
-	  float CPU_Usage;
+    float CPU_Usage;
     float Battery_Voltage;
     uint8_t S_Initialize;     //state of system: 0-->not initialize  1-->initialized
     uint16_t cnt_1ms;

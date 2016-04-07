@@ -1,12 +1,11 @@
-#ifndef __pwm_in_H__
-#define __pwm_in_H__
+#ifndef PWM_IN_H__
+#define PWM_IN_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif 
 
 #include "stm32f4xx.h"
-#include "main_config.h"
 
 #define PWM_Input_CH0_ENABLE 1    // if use this channel to capture PWM  PC0
 #define PWM_Input_CH1_ENABLE 0    // if use this channel to capture PWM  PC1
@@ -29,6 +28,6 @@ void HF_PwmIn_Init(void);
 }
 #endif 
 
-#endif //__pwm_in_H__
+#endif //#ifndef PWM_IN_H__
 
 

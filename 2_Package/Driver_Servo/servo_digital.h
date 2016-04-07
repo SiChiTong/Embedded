@@ -1,12 +1,12 @@
-#ifndef __servo_digital_driver_H
-#define __servo_digital_driver_H
+#ifndef SERVO_DIGITAL_H
+#define SERVO_DIGITAL_H
 
 #include "servo_config.h"
 
-#define SERVO_Debug_USART      USART1
-#define SERVO_Control_USART    USART3 
+#define SERVO_DEBUG_USART      USART1
+#define SERVO_CONTROL_USART    USART3
 
-#if Hardware_Platform == 1 
+#if HARDWARE_PLATFORM== 1 
 // AX_IO CONFIG
 #define RCC_AX_IO            RCC_APB1Periph_GPIOA
 #define GPIO_AX_IO           GPIOA
@@ -15,7 +15,7 @@
 #define AX_RXD               GPIO_ResetBits(GPIO_AX_IO , GPIO_AX_IO_Pin)
 #endif
 
-#if Hardware_Platform == 4 
+#if HARDWARE_PLATFORM== 4 
 // AX_IO CONFIG
 #define RCC_AX_IO            RCC_AHB1Periph_GPIOD
 #define GPIO_AX_IO           GPIOD
@@ -26,7 +26,7 @@
 
 #define AX_MAX_NUM   20      //最大舵机编号,检测舵机号只检测从0到AX_MAX_NUM-1.
 
-class SERVO_D
+class ServoDigital
 {
 public:
 
@@ -35,14 +35,14 @@ public:
     volatile uint8_t gbpRxBuffer[128];				     //经过处理的缓冲数据
     volatile uint8_t gbpTxBuffer[128];				     //发送缓存
     volatile uint8_t gbRxBufferWritePointer;
-    volatile uint8_t gbpRxInterruptBuffer[256];	   //	中断接收的缓冲数据
+    volatile uint8_t gbpRxInterruptBuffer[256];	         //中断接收的缓冲数据
     volatile uint8_t Timer_count;
     volatile uint8_t axOline[AX_MAX_NUM];
     volatile uint8_t axOlineNum;
     volatile uint8_t delayCount;
 
-    SERVO_D();
-    void AX_Servo_Init(void);
+    ServoDigital();
+    void axServoInit(void);
     void getServoConnective(void);
     void disableServo(uint8_t *p, uint8_t num);
     void enableServo(uint8_t *p, uint8_t num);
@@ -68,11 +68,11 @@ private:
 
     void  moveServoPosition(uint8_t *p, uint8_t num);
     void getServoPosition(uint8_t *p, uint8_t num);
-    void  moveServoPosWithSpeed(uint8_t *p, uint8_t num);
+    void moveServoPosWithSpeed(uint8_t *p, uint8_t num);
 
-    void Packet_Reply_AX(USART_TypeDef* USARTx, unsigned char InstrType,unsigned char * data, unsigned int length); //length只包含data的长度
+    void packageReplyToDebug(USART_TypeDef* USARTx, unsigned char command_type,unsigned char * data, unsigned int length); //length只包含data的长度
 
 };
 
-#endif  //#ifndef __servo_digital_driver_H
+#endif  // #ifndef SERVO_DIGITAL_H
 
