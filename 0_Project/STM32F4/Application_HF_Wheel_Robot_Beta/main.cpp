@@ -14,7 +14,7 @@
 *s
 * Description:   
 ***********************************************************************************************************************/
-
+		
 #include "main_includes.h"
 
 void System_Init(void)
@@ -24,39 +24,38 @@ void System_Init(void)
 
     HF_BSP_Init();
 
-    motor_top.Motor_Top_Init();
+    motor_top.motorTopInit();
 
-    hf_head.AX_Servo_Init();
+    hf_head.axServoInit();
 
-    Hands_Free_3WD.Robot_Wheel_Top_Init();
+    hands_free_robot.robotWheelTopInit();
 
-    hf_link.HF_Link_Init();
-
-    sbus.Sbus_Init();
+    sbus.sbusInit();
 
     IMU_Top_Init();
 
     //INTX_ENABLE();	 //enable all interruption
-	
-	  printf("app start \r\n");
-}
 
+    printf("app start \r\n");
+
+}
+  
 int main(void)
 {
-
     System_Init();
-	
     while(1)
     {
 
-        hf_link.HF_Link_Call();
+        if(usart1_queue.emptyCheck()==0){
+            hf_link_pc_node.byteAnalysisCall(usart1_queue.getData());
+        }
 
-        if ( system_data.cnt_1ms >= 1 )     // 1000hz
+        if ( system_data.cnt_1ms >= 1 )      // 1000hz
         {
             system_data.cnt_1ms=0;
-            IMU_Top_Call();					        // stm32f4 -- 631us(fpu)
+            IMU_Top_Call();					       // stm32f4 -- 631us(fpu)
         }
-        if ( system_data.cnt_2ms >= 2 )     // 500hz
+        if ( system_data.cnt_2ms >= 2 )      // 500hz
         {
             system_data.cnt_2ms=0;
         }
@@ -72,18 +71,19 @@ int main(void)
         if ( system_data.cnt_20ms >= 20 )   // 50hz
         {
             system_data.cnt_20ms = 0 ;
-					  motor_top.Motor_Top_Call();     //速度环控制
+            motor_top.motorTopCall();       //motor speed control
         }
         if ( system_data.cnt_50ms >= 50 )   // 20hz
         {
             system_data.cnt_50ms = 0 ;
-            hf_head.Head_Top_Call();
-					  Hands_Free_3WD.Robot_Wheel_Top_Call();    //机器人运动控制和坐标解算
+            hf_head.headTopCall();
+            hands_free_robot.robotWheelTopCall();    //robot control interface
             HF_Set_Led_State(0,2);
         }
 
     }
 
+    return 0;
 }
 
 

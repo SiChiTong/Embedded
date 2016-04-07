@@ -4,9 +4,14 @@
 
 TEMPLATE = app
 TARGET = HNADS-FREE-V1.6
+#CONFIG += console
+#CONFIG += app_bundle
+#CONFIG -= qt
+
 INCLUDEPATH += . \
                0_Project/STM32F4/Application_HF_Bootloader \
                0_Project/STM32F4/Application_HF_Wheel_Robot_Master \
+               0_Project/STM32F4/Application_HF_Wheel_Robot_Beta \
                0_Project/STM32F4/Template_NO_RTOS \
                0_Project/STM32F4/Template_UCOSII  \
                0_Project/STM32F4/Template_UCOSIII \
@@ -31,17 +36,19 @@ INCLUDEPATH += . \
                2_Package/Driver_FSMC_LCD \
                2_Package/Driver_IAP \
                2_Package/Driver_IMU \
-               2_Package/Driver_Motor_Contorl \
+               2_Package/Driver_Motor \
                2_Package/Driver_Nrf24l01 \
                2_Package/Driver_Oled \
                2_Package/Driver_SD_Card \
                2_Package/Driver_Servo \
                2_Package/Driver_Touch_Screen \
+               2_Package/LIB_Common \
                2_Package/LIB_DSP_Test \
                2_Package/LIB_HF_Link \
                2_Package/LIB_Math \
+               2_Package/LIB_Robot_Abstract \
                2_Package/LIB_Robot_Wheel \
-               2_Package/LIB_Sbus_Ppm \
+               2_Package/LIB_SBUS_PPM \
                4_API/libmad-0.15.1b \
 
 # Input
@@ -51,6 +58,9 @@ HEADERS += 0_Project/STM32F4/Application_HF_Bootloader/main_config.h \
            0_Project/STM32F4/Application_HF_Wheel_Robot_Master/main_config.h \
            0_Project/STM32F4/Application_HF_Wheel_Robot_Master/main_includes.h \
            0_Project/STM32F4/Application_HF_Wheel_Robot_Master/stm32f4xx_it.h \
+           0_Project/STM32F4/Application_HF_Wheel_Robot_Beta/main_config.h \
+           0_Project/STM32F4/Application_HF_Wheel_Robot_Beta/main_includes.h \
+           0_Project/STM32F4/Application_HF_Wheel_Robot_Beta/stm32f4xx_it.h \
            0_Project/STM32F4/Template_NO_RTOS/main_config.h \
            0_Project/STM32F4/Template_NO_RTOS/main_includes.h \
            0_Project/STM32F4/Template_NO_RTOS/stm32f4xx_it.h \
@@ -192,9 +202,8 @@ HEADERS += 0_Project/STM32F4/Application_HF_Bootloader/main_config.h \
            2_Package/Driver_IMU/imu_mpu6050_driver.h \
            2_Package/Driver_IMU/imu_top.h \
            2_Package/Driver_IMU/imu_top_arithmetic_model.h \
-           2_Package/Driver_Motor_Contorl/motor_config.h \
-           2_Package/Driver_Motor_Contorl/motor_driver.h \
-           2_Package/Driver_Motor_Contorl/motor_top.h \
+           2_Package/Driver_Motor/motor_config.h \
+           2_Package/Driver_Motor/motor_top.h \
            2_Package/Driver_Nrf24l01/nrf24l01_config.h \
            2_Package/Driver_Nrf24l01/nrf24l01_driver.h \
            2_Package/Driver_Nrf24l01/nrf24l01_stack.h \
@@ -207,13 +216,14 @@ HEADERS += 0_Project/STM32F4/Application_HF_Bootloader/main_config.h \
            2_Package/Driver_SD_Card/sdio_driver_f4.h \
            2_Package/Driver_SD_Card/sdio_top.h \
            2_Package/Driver_Servo/servo_config.h \
-           2_Package/Driver_Servo/servo_digital_driver.h \
+           2_Package/Driver_Servo/servo_digital.h \
            2_Package/Driver_Servo/servo_top.h \
            2_Package/Driver_Touch_Screen/ctiic.h \
            2_Package/Driver_Touch_Screen/ft5206.h \
            2_Package/Driver_Touch_Screen/gt9147.h \
            2_Package/Driver_Touch_Screen/ott2001a.h \
            2_Package/Driver_Touch_Screen/touch_top.h \
+           2_Package/LIB_Common/queue.h \
            2_Package/LIB_DSP/fft_test.h \
            2_Package/LIB_HF_Link/hf_link_config.h \
            2_Package/LIB_HF_Link/hf_link.h \
@@ -222,13 +232,14 @@ HEADERS += 0_Project/STM32F4/Application_HF_Bootloader/main_config.h \
            2_Package/LIB_Math/base_math_matrix.h \
            2_Package/LIB_Math/base_math_top.h \
            2_Package/LIB_Math/base_math_trigonometric.h \
+           2_Package/LIB_Robot_Abstract/robot_abstract.h \
            2_Package/LIB_Robot_Wheel/robot_wheel_config.h \
            2_Package/LIB_Robot_Wheel/robot_wheel_top.h \
            2_Package/LIB_Robot_Wheel/tf_2wd.h \
            2_Package/LIB_Robot_Wheel/tf_3wd.h \
            2_Package/LIB_Robot_Wheel/tf_4wd.h \
-           2_Package/LIB_Sbus_Ppm/sbus_ppm_config.h \
-           2_Package/LIB_Sbus_Ppm/sbus_ppm_driver.h \
+           2_Package/LIB_SBUS_PPM/sbus_ppm_config.h \
+           2_Package/LIB_SBUS_PPM/sbus_ppm.h \
            4_API/libmad-0.15.1b/bit.h \
            4_API/libmad-0.15.1b/config.h \
            4_API/libmad-0.15.1b/decoder.h \
@@ -248,11 +259,16 @@ HEADERS += 0_Project/STM32F4/Application_HF_Bootloader/main_config.h \
            4_API/libmad-0.15.1b/rq_table.dat \
            4_API/libmad-0.15.1b/imdct_s.dat \
            4_API/libmad-0.15.1b/D.dat \
+    2_Package/LIB_HF_Link/robot_abstract.h \
+    2_Package/Driver_Motor/motor_control.h \
+    2_Package/LIB_HF_Link/hf_link_port.h
 
 SOURCES += 0_Project/STM32F4/Application_HF_Bootloader/main.cpp \
            0_Project/STM32F4/Application_HF_Bootloader/stm32f4xx_it.cpp \
            0_Project/STM32F4/Application_HF_Wheel_Robot_Master/main.cpp \
            0_Project/STM32F4/Application_HF_Wheel_Robot_Master/stm32f4xx_it.cpp \
+           0_Project/STM32F4/Application_HF_Wheel_Robot_Beta/main.cpp \
+           0_Project/STM32F4/Application_HF_Wheel_Robot_Beta/stm32f4xx_it.cpp \
            0_Project/STM32F4/Template_NO_RTOS/main.cpp \
            0_Project/STM32F4/Template_NO_RTOS/stm32f4xx_it.cpp \
            0_Project/STM32F4/Template_UCOSII/main.cpp \
@@ -626,8 +642,7 @@ SOURCES += 0_Project/STM32F4/Application_HF_Bootloader/main.cpp \
            2_Package/Driver_IMU/imu_mpu6050_driver.cpp \
            2_Package/Driver_IMU/imu_top.cpp \
            2_Package/Driver_IMU/imu_top_arithmetic_model.cpp \
-           2_Package/Driver_Motor_Contorl/motor_driver.cpp \
-           2_Package/Driver_Motor_Contorl/motor_top.cpp \
+           2_Package/Driver_Motor/motor_top.cpp \
            2_Package/Driver_Nrf24l01/nrf24l01_driver.cpp \
            2_Package/Driver_Nrf24l01/nrf24l01_stack.cpp \
            2_Package/Driver_Nrf24l01/nrf24l01_test.cpp \
@@ -636,13 +651,14 @@ SOURCES += 0_Project/STM32F4/Application_HF_Bootloader/main.cpp \
            2_Package/Driver_Oled/oled_top.c \
            2_Package/Driver_SD_Card/sdio_driver_f4.c \
            2_Package/Driver_SD_Card/sdio_top.c \
-           2_Package/Driver_Servo/servo_digital_driver.cpp \
+           2_Package/Driver_Servo/servo_digital.cpp \
            2_Package/Driver_Servo/servo_top.cpp \
            2_Package/Driver_Touch_Screen/ctiic.c \
            2_Package/Driver_Touch_Screen/ft5206.c \
            2_Package/Driver_Touch_Screen/gt9147.c \
            2_Package/Driver_Touch_Screen/ott2001a.c \
            2_Package/Driver_Touch_Screen/touch_top.c \
+           2_Package/LIB_Common/queue.cpp \
            2_Package/LIB_DSP/fft_test.c \
            2_Package/LIB_HF_Link/hf_link.cpp \
            2_Package/LIB_HF_Link/queue.cpp \
@@ -653,7 +669,7 @@ SOURCES += 0_Project/STM32F4/Application_HF_Bootloader/main.cpp \
            2_Package/LIB_Robot_Wheel/tf_2wd.cpp \
            2_Package/LIB_Robot_Wheel/tf_3wd.cpp \
            2_Package/LIB_Robot_Wheel/tf_4wd.cpp \     
-           2_Package/LIB_Sbus_Ppm/sbus_ppm_driver.cpp \
+           2_Package/LIB_SBUS_PPM/sbus_ppm.cpp \
            4_API/libmad-0.15.1b/bit.c \
            4_API/libmad-0.15.1b/decoder.c \
            4_API/libmad-0.15.1b/fixed.c \
@@ -667,4 +683,7 @@ SOURCES += 0_Project/STM32F4/Application_HF_Bootloader/main.cpp \
            4_API/libmad-0.15.1b/stream.c \
            4_API/libmad-0.15.1b/synth.c \
            4_API/libmad-0.15.1b/version.c \
+    2_Package/LIB_Robot_Abstract/robot_abstract.cpp \
+    2_Package/Driver_Motor/motor_control.cpp \
+    2_Package/LIB_HF_Link/hf_link_port.cpp
 

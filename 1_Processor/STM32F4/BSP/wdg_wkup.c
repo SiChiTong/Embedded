@@ -24,8 +24,6 @@ extern "C" {
 #include "wdg_wkup.h"
 #include "delay.h"
 
-#if BSP_CFG_WDG_WKUP_EN  > 0u
-
 /***********************************************************************************************************************
 ***                                                                                                                  ***
 ***                                        Initialize Indepedent WDG                                                 ***
@@ -339,9 +337,6 @@ void HF_WKUP_Init(void)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//
     NVIC_Init(&NVIC_InitStructure);//config NVIC
 }
-
-
-#endif  //#if BSP_CFG_WDG_WKUP_EN  > 0u
 
 #ifdef __cplusplus
 }

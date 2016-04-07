@@ -6,7 +6,6 @@ extern "C" {
 #endif 
 
 #include "stm32f4xx.h"
-#include "main_config.h"
 
 //time structure
 typedef struct

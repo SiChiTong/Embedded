@@ -1,12 +1,11 @@
-#ifndef __spi_H__
-#define __spi_H__
+#ifndef SPI_H
+#define SPI_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif 
-
+	
 #include "stm32f4xx.h"
-#include "main_config.h"
 
 //Initialize serial external interface of SPI, config SPI working on master mode
 void HF_SPI_Init(SPI_TypeDef *SPIx, unsigned char GPIO_AF);     //SPI interface initialization, input parameter SPI1 SPI2
@@ -16,6 +15,6 @@ unsigned char HF_SPI_ReadWriteByte(SPI_TypeDef *SPIx, unsigned char TxData);    
 }
 #endif 
 
-#endif //__spi_H__
+#endif // #ifndef SPI_H
 
 

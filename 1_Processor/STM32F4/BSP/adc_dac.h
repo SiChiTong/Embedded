@@ -1,12 +1,11 @@
-#ifndef __adc_dac_H__
-#define __adc_dac_H__
+#ifndef ADC_DAC_H
+#define ADC_DAC_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif 
 
 #include "stm32f4xx.h"
-#include "main_config.h"
 		
 #define ADC_IN0   0     // If use this ADC channel   PA0 
 #define ADC_IN1   0     // If use this ADC channel   PA1
@@ -47,5 +46,5 @@ void HF_Dac_Set_Vol(unsigned int DAC_Channel_x, unsigned  short int  vol);
 }
 #endif 
 
-#endif //#ifndef __adc_dac_H__
+#endif //#ifndef ADC_DAC_H
 

@@ -27,7 +27,6 @@ extern "C" {
 
 PWM_In_Data pwm_in_data_r;   //current input value of PWM (Unit:us)
 
-#if BSP_CFG_PWMIN_EN > 0u	 
 /***********************************************************************************************************************
 * Function:     void HF_PwmIn_Init(void) 
 *
@@ -43,7 +42,6 @@ PWM_In_Data pwm_in_data_r;   //current input value of PWM (Unit:us)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_PwmIn_Init(void) 
 {
@@ -155,7 +153,6 @@ void HF_PwmIn_Init(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 
 //#if PWM_Input_CH0_ENABLE ==1        //if enable this channel
@@ -280,7 +277,6 @@ void EXTI4_IRQHandler(void)
 
 #endif
 
-#endif  //#if BSP_CFG_PWMIN_EN > 0u	
 
 #ifdef __cplusplus
 }

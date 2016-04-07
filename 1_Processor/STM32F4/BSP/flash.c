@@ -22,9 +22,6 @@ extern "C" {
 
 #include "flash.h"
 
-
-#if BSP_CFG_FLASH_EN > 0u
-
 /***********************************************************************************************************************
 * Function:     u32 STMFLASH_ReadWord(u32 faddr)
 *
@@ -153,9 +150,6 @@ void STMFLASH_Read(u32 ReadAddr,u32 *pBuffer,u32 NumToRead)
         ReadAddr+=4;//offset 4 bytes
     }
 }
-
-
-#endif //#if BSP_CFG_FLASH_EN > 0u
 
 #ifdef __cplusplus
 }

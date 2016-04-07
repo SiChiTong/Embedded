@@ -80,8 +80,8 @@
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>C:\windows_software\Study_software\Keil_mdkv5\ARM\ARMCC\bin\fromelf.exe  --bin -o  Bin\APP.bin  Output\APP.axf</UserProg1Name>
-            <UserProg2Name>D:\win7_software\Study_software\Keil_mdkv5\ARM\ARMCC\bin\fromelf.exe  --bin -o  Bin\APP.bin  Output\APP.axf</UserProg2Name>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
           </AfterMake>
@@ -619,16 +619,6 @@
               <FilePath>..\..\..\1_Processor\STM32F4\BSP\BSP_TOP.h</FilePath>
             </File>
             <File>
-              <FileName>nvic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\1_Processor\STM32F4\BSP\nvic.c</FilePath>
-            </File>
-            <File>
-              <FileName>nvic.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\1_Processor\STM32F4\BSP\nvic.h</FilePath>
-            </File>
-            <File>
               <FileName>delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\1_Processor\STM32F4\BSP\delay.c</FilePath>
@@ -637,6 +627,16 @@
               <FileName>delay.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\1_Processor\STM32F4\BSP\delay.h</FilePath>
+            </File>
+            <File>
+              <FileName>nvic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\1_Processor\STM32F4\BSP\nvic.c</FilePath>
+            </File>
+            <File>
+              <FileName>nvic.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\1_Processor\STM32F4\BSP\nvic.h</FilePath>
             </File>
             <File>
               <FileName>rtc.c</FileName>

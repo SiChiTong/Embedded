@@ -1,6 +1,6 @@
 /***********************************************************************************************************************
 * Copyright (c) Hands Free Team. All rights reserved.
-* FileName: hf_link_config.h
+* FileName: base_math_matrix.cpp
 * Contact:  QQ Exchange Group -- 521037187
 * Version:  V2.0
 *
@@ -10,27 +10,18 @@
 *
 * History:
 * <author>      <time>      <version>      <desc>
-* mawenke       2015.10.1   V1.0           creat this file
-* Description:
+* mawenke       2015.12.1   V1.6           creat this file
+* Description:  本文件定义了一个机器人抽象体
 *
 ***********************************************************************************************************************/
 
-#ifndef __hf_link_config_H__
-#define __hf_link_config_H__
 
-#include "main_config.h"
-#include "BSP_TOP.h"
+#include "robot_abstract.h"
 
-#ifndef LIB_Robot_Wheel
-#error "!!! the hf_link package must dependent on LIB_Robot_Wheel package at least"
-#endif
 
-#ifdef LIB_Robot_Wheel
-#include "robot_wheel_top.h"
-#endif
-#ifdef    Driver_Servo
-#include "servo_top.h"
-#endif
 
-#endif    //#ifndef __hf_link_config_H__
+
+
+
+
 

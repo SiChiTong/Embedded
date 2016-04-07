@@ -1,8 +1,8 @@
-#ifndef __motor_top_H__
-#define __motor_top_H__
+#ifndef MOTOR_TOP_H
+#define MOTOR_TOP_H
 
 #include "motor_config.h"
-#include "motor_contorl.h"
+#include "motor_control.h"
 
 /*******************MOTOR1************************/	
 #define RCC_MOTOREN1            RCC_AHB1Periph_GPIOE
@@ -28,22 +28,32 @@
 #define MOTOREN3_ON()           GPIO_SetBits(GPIO_MOTOREN3 , GPIO_MOTOREN3_Pin)
 /*********************************************/		
 
-class MOTOR_TOP
+class MotorTop
 {
-public:
-    MOTOR_PID motor1,motor2,motor3;
-    unsigned char Enable_M1,Enable_M2,Enable_M3 ;    //Whether or not enable motor control
-    float Expect_Angle_Speed_M1,Expect_Angle_Speed_M2,Expect_Angle_Speed_M3;
 
-    MOTOR_TOP();
-    void Motor_Top_Init(void);
-    void Motor_Top_Call(void);
+public:
+    MotorTop()
+    {
+        enable_m1=0;
+        enable_m2=0;
+        enable_m3=0;
+        expect_angle_speed_m1=0;
+        expect_angle_speed_m2=0;
+        expect_angle_speed_m3=0;
+    }
+    void motorTopInit(void);
+    void motorTopCall(void);
+
+public:
+    MotorControl motor1,motor2,motor3;
+    unsigned char enable_m1,enable_m2,enable_m3 ;    //Whether or not enable motor control
+    float expect_angle_speed_m1,expect_angle_speed_m2,expect_angle_speed_m3;
 
 private:
-    void Motor_Set_PWM(unsigned char Motor_ID , float Pid_out);
+    void motor_set_pwm(unsigned char motor_id , float pid_out);
 };
 
-extern MOTOR_TOP motor_top;
+extern MotorTop motor_top;
 
-#endif
+#endif // #ifndef MOTOR_TOP_H
 

@@ -10,64 +10,25 @@
 *
 * History:
 * <author>      <time>      <version>      <desc>
-* mawenke      2015.10.1    V1.0          creat this file
+* mawenke       2015.10.1    V1.0          creat this file
 *
-* Description:  该文件在LIB_Robot_3WD package里面  依赖 Motor_Contorl package
+* Description:  
 ***********************************************************************************************************************/
 
 #include "robot_wheel_top.h"
+#include "hf_link.h"
 
-ROBOT_WHEEL Hands_Free_3WD;
-ROBOT_WHEEL::ROBOT_WHEEL()
-{
-    Communication_Quality=0;  // 0~100  if<30 Communication_Quality is bad and Control Disable  , otherwise control enable
-    L_Filter = 0.4;    //速度低通滤波系数
-    Control_EN=1;	     //默认使能机器人控制
+const float degree_to_radian=0.017453;
+const float radian_to_degree=57.2958;
 
-    Global_Speed_Renew=0;
-    Robot_Speed_Renew=0;
-    Motor_Speed_Renew=0;
+RobotAbstract my_robot;
+HFLink hf_link_pc_node(0x11,0x01,&my_robot);
+HFLink *hf_link_node_pointer=&hf_link_pc_node;
 
-    Expect_Global_Speed.X=0;
-    Expect_Global_Speed.Y=0;
-    Expect_Global_Speed.Z=0;
-
-    Expect_Robot_Speed.X=0;
-    Expect_Robot_Speed.Y=0;
-    Expect_Robot_Speed.Z=0;
-
-    Expect_Motor_Angle_Speed.M1=0;
-    Expect_Motor_Angle_Speed.M2=0;
-    Expect_Motor_Angle_Speed.M3=0;
-
-    Mesure_Global_Coordinate.X=0;
-    Mesure_Global_Coordinate.Y=0;
-    Mesure_Global_Coordinate.Z=0;
-
-    Mesure_Robot_Coordinate.X=0;
-    Mesure_Robot_Coordinate.Y=0;
-    Mesure_Robot_Coordinate.Z=0;
-
-    Mesure_Global_Speed.X=0;
-    Mesure_Global_Speed.Y=0;
-    Mesure_Global_Speed.Z=0;
-
-    Mesure_Robot_Speed.X =0;
-    Mesure_Robot_Speed.Y =0;
-    Mesure_Robot_Speed.Z =0;
-
-    Mesure_Motor_Speed.M1=0;
-    Mesure_Motor_Speed.M2=0;
-    Mesure_Motor_Speed.M3=0;
-
-    Mesure_Motor_Distance.M1=0;
-    Mesure_Motor_Distance.M2=0;
-    Mesure_Motor_Distance.M3=0;
-
-}
+RobotWheel hands_free_robot;
 
 /***********************************************************************************************************************
-* Function:     void ROBOT_WHEEL::Robot_3WD_Init(void)   
+* Function:     void RobotWheel::robotWheelTopInit(void)
 *
 * Scope:        public
 *
@@ -80,19 +41,28 @@ ROBOT_WHEEL::ROBOT_WHEEL()
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.10.1   creat
 ***********************************************************************************************************************/
-void ROBOT_WHEEL::Robot_Wheel_Top_Init(void)          
+void RobotWheel::robotWheelTopInit(void)          
 {
+    set_robot_wheel_radius(my_robot.robot_parameters.robot_wheel_radius);
+    set_robot_body_radius(my_robot.robot_parameters.robot_body_radius);
+    l_filter = my_robot.robot_parameters.speed_low_filter;
 
+    my_robot.motor_parameters.p1=motor_top.motor1.get_p1();
+    my_robot.motor_parameters.i1=motor_top.motor1.get_i1();
+    my_robot.motor_parameters.d1=motor_top.motor1.get_d1();
+    my_robot.motor_parameters.p2=motor_top.motor1.get_p2();
+    my_robot.motor_parameters.i2=motor_top.motor1.get_i2();
+    my_robot.motor_parameters.d2=motor_top.motor1.get_d2();
 }
 
 /***********************************************************************************************************************
-* Function:     void ROBOT_WHEEL::Robot_Wheel_Top_Call(void)   
+* Function:     void RobotWheel::robotWheelTopCall(void)   
 *
 * Scope:        public
 *
-* Description:   坐标解算 不需要PID那么大的频率 可以设置为PID频率的 2分之1 或者 4分之1 都行
+* Description:  robot control interface, you must call it in a frequency , generaly  can set
+*               be a half of pid frequency
 *
 * Arguments:
 *
@@ -101,21 +71,143 @@ void ROBOT_WHEEL::Robot_Wheel_Top_Init(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.10.1   creat
 ***********************************************************************************************************************/
-void ROBOT_WHEEL::Robot_Wheel_Top_Call(void)          
+void RobotWheel::robotWheelTopCall(void)
 {
-    Chassis_Control();            // robot Chassis Control         底盘控制
-    Coordinate_Calculation();     // robot Coordinate Calculation  坐标解算   
+    robotDataUpdate();
+    chassisControl();    // control your robotic chassis
+    robotCoordCalc();    // for robot localization
+    headControl();       // control your robotic head
+    armControl();        // control your robotic arm
 }
 
-
 /***********************************************************************************************************************
-* Function:     void ROBOT_WHEEL::Chassis_Control(void)           
+* Function:     void RobotWheel::robotDataUpdate(void)
 *
 * Scope:        private
 *
-* Description:  底盘控制 Chassis Control call ， 100hz is adviced for   
+* Description:  update the robot RobotAbstract ,only need a low call frequency , <=20HZ is recommended
+*
+*
+* Arguments:
+*
+* Return:
+*
+* Cpu_Time:
+*
+* History:
+***********************************************************************************************************************/
+void RobotWheel::robotDataUpdate(void)
+{
+    //chassis
+    my_robot.measure_global_speed.x = 0;
+    my_robot.measure_global_speed.y = 0;
+    my_robot.measure_global_speed.z = 0;
+    my_robot.measure_robot_speed.x =0;
+    my_robot.measure_robot_speed.y =0;
+    my_robot.measure_robot_speed.z =0;
+
+    my_robot.measure_motor_speed.servo1 = motor_top.motor1.get_measure_angle_speed() * degree_to_radian;
+    my_robot.measure_motor_speed.servo2 = motor_top.motor2.get_measure_angle_speed() * degree_to_radian;
+    my_robot.measure_motor_speed.servo3 = motor_top.motor3.get_measure_angle_speed() * degree_to_radian;
+
+    getRobotSpeed((float* )&my_robot.measure_motor_speed , (float* )&my_robot.measure_robot_speed);
+    getGlobalSpeed((float* )&my_robot.measure_motor_speed , (float* )&my_robot.measure_global_speed , my_robot.measure_global_coordinate.z);
+
+    my_robot.measure_motor_mileage.servo1 = motor_top.motor1.get_past_total_angle() * degree_to_radian;
+    my_robot.measure_motor_mileage.servo2 = motor_top.motor2.get_past_total_angle() * degree_to_radian;
+    my_robot.measure_motor_mileage.servo3 = motor_top.motor3.get_past_total_angle() * degree_to_radian;
+    //coordinate data will be update by robotCoordCalc function , because this Typed data need a High Frequency
+    //MSGCoord   measure_global_coordinate ;
+    //MSGCoord   measure_robot_coordinate;
+
+    //update by arm function , because it's not required components
+    //measure_arm1_state
+    //measure_arm2_state
+
+    //update by head function , because it's not required components
+    //measure_head1_state
+    //measure_head2_state
+    my_robot.robot_system_info.battery_voltage=system_data.Battery_Voltage;
+    my_robot.robot_system_info.cpu_temperature=system_data.CPU_Temperature;
+    my_robot.robot_system_info.cpu_usage=system_data.CPU_Usage;
+    my_robot.robot_system_info.system_time=system_data.System_Time;
+
+#ifdef DRIVER_IMU
+    my_robot.measure_imu_euler_angle.pitch = imu_arithmetic_model.Fus_Angle.pitch * degree_to_radian;
+    my_robot.measure_imu_euler_angle.roll = imu_arithmetic_model.Fus_Angle.roll * degree_to_radian;
+    my_robot.measure_imu_euler_angle.yaw = imu_arithmetic_model.Fus_Angle.yaw * degree_to_radian;
+#endif
+
+
+    /****************************************************************************/
+
+
+    if(hf_link_node_pointer->receive_package_renew[CLEAR_COORDINATE_DATA]==1)
+    {
+        hf_link_node_pointer->receive_package_renew[CLEAR_COORDINATE_DATA]=0;
+        my_robot.measure_global_coordinate.x=0;
+        my_robot.measure_global_coordinate.y=0;
+        my_robot.measure_global_coordinate.z=0;
+        my_robot.measure_robot_coordinate.x=0;
+        my_robot.measure_robot_coordinate.y=0;
+        my_robot.measure_robot_coordinate.z=0;
+        motor_top.motor1.clear_past_total_angle();
+        motor_top.motor2.clear_past_total_angle();
+        motor_top.motor3.clear_past_total_angle();
+    }
+    if(hf_link_node_pointer->receive_package_renew[SET_ROBOY_PARAMETERS]==1)
+    {
+        hf_link_node_pointer->receive_package_renew[SET_ROBOY_PARAMETERS]=0;
+        set_robot_wheel_radius(my_robot.robot_parameters.robot_wheel_radius);
+        set_robot_body_radius(my_robot.robot_parameters.robot_body_radius);
+        l_filter = my_robot.robot_parameters.speed_low_filter;
+    }
+    if(hf_link_node_pointer->receive_package_renew[SAVE_ROBOY_PARAMETERS]==1)
+    {
+        hf_link_node_pointer->receive_package_renew[SAVE_ROBOY_PARAMETERS]=0;
+    }
+    if(hf_link_node_pointer->receive_package_renew[SET_MOTOR_PARAMETERS]==1)
+    {
+        hf_link_node_pointer->receive_package_renew[SET_MOTOR_PARAMETERS]=0;
+
+        motor_top.motor1.set_pid_parameters(my_robot.motor_parameters.p1 , my_robot.motor_parameters.i1,
+                                            my_robot.motor_parameters.d1 , my_robot.motor_parameters.p2,
+                                            my_robot.motor_parameters.i2 , my_robot.motor_parameters.d2
+                                            );
+        motor_top.motor2.set_pid_parameters(my_robot.motor_parameters.p1 , my_robot.motor_parameters.i1,
+                                            my_robot.motor_parameters.d1 , my_robot.motor_parameters.p2,
+                                            my_robot.motor_parameters.i2 , my_robot.motor_parameters.d2
+                                            );
+#if ROBOT_WHEEL_MODEL > 2
+        motor_top.motor3.set_pid_parameters(my_robot.motor_parameters.p1 , my_robot.motor_parameters.i1,
+                                            my_robot.motor_parameters.d1 , my_robot.motor_parameters.p2,
+                                            my_robot.motor_parameters.i2 , my_robot.motor_parameters.d2
+                                            );
+#endif
+
+#if ROBOT_WHEEL_MODEL > 3
+        motor_top.motor3.set_pid_parameters(my_robot.motor_parameters.p1 , my_robot.motor_parameters.i1,
+                                            my_robot.motor_parameters.d1 , my_robot.motor_parameters.p2,
+                                            my_robot.motor_parameters.i2 , my_robot.motor_parameters.d2
+                                            );
+#endif
+
+
+    }
+    if(hf_link_node_pointer->receive_package_renew[SAVE_MOTOR_PARAMETERS]==1)
+    {
+        hf_link_node_pointer->receive_package_renew[SAVE_MOTOR_PARAMETERS]=0;
+    }
+
+}
+
+/***********************************************************************************************************************
+* Function:     void RobotWheel::chassisControl(void)           
+*
+* Scope:        private
+*
+* Description:  control your robotic chassis
 *
 * Arguments:
 *
@@ -124,87 +216,85 @@ void ROBOT_WHEEL::Robot_Wheel_Top_Call(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.10.1   creat
-* by   mawenke   2015.1.23   update
 ***********************************************************************************************************************/
-void ROBOT_WHEEL::Chassis_Control(void)    
+void RobotWheel::chassisControl(void)    
 { 	 
 
-		Communication_Quality--;	             //Communication_Quality reduce 1 every call
-		if(Communication_Quality >= 100){
-			Communication_Quality=100;
-		}
-		else if(Communication_Quality <= 5){
-			Communication_Quality = 5;
-		}
-		if( Global_Speed_Renew ==1 ){
-			Global_Speed_Renew = 0;
-			Communication_Quality += 30;        //Communication_Quality add 30
-			Global_Speed_Set( (float*)&Expect_Global_Speed , (float*)&Expect_Motor_Angle_Speed ,
-															 Mesure_Global_Coordinate.Z);
-		}
-		else if( Robot_Speed_Renew ==1 ){
-			Robot_Speed_Renew = 0;
-			Communication_Quality += 30;
-			Robot_Speed_Set((float*)&Expect_Robot_Speed , (float*)&Expect_Motor_Angle_Speed);
-		}
-		else if( Motor_Speed_Renew ==1 ){
-			Motor_Speed_Renew = 0;
-			Communication_Quality += 30;
-		}
-		if(Communication_Quality <=30 ){       //if Communication_Quality is too low
-	    Control_EN = 0; //motor control disable
-		} 
-	  else if(Communication_Quality >=70 ){  //if Communication_Quality is too low
-	    Control_EN = 1; //motor control disable
-		}
-							
-    if(Control_EN == 0)                        //motor control disable
-    {
-			motor_top.Expect_Angle_Speed_M1=0;     //set motor Expect Speed 0
-			motor_top.Expect_Angle_Speed_M2=0;
-			#if ROBOT_WHEEL_MODEL > 2     
-			motor_top.Expect_Angle_Speed_M3=0;
-			#endif
-			#if ROBOT_WHEEL_MODEL > 3         
-			motor_top.Expect_Angle_Speed_M4=0;
-			#endif
+    if( hf_link_node_pointer->receive_package_renew[SET_GLOBAL_SPEED]==1 ){
+        hf_link_node_pointer->receive_package_renew[SET_GLOBAL_SPEED]=0;
+        control_command_quality += 30;        //control_command_quality add 30
+        globalSpeedSet( (float* )&my_robot.expect_global_speed , (float* )&my_robot.expect_motor_speed ,
+                        my_robot.measure_global_coordinate.z);
     }
-    else if(Control_EN == 1)
+    else if( hf_link_node_pointer->receive_package_renew[SET_ROBOT_SPEED]==1 ){
+        hf_link_node_pointer->receive_package_renew[SET_ROBOT_SPEED ]=0;
+        control_command_quality += 30;
+        robotSpeedSet((float* )&my_robot.expect_robot_speed , (float* )&my_robot.expect_motor_speed);
+    }
+    else if( hf_link_node_pointer->receive_package_renew[SET_MOTOR_SPEED]==1 ){
+        hf_link_node_pointer->receive_package_renew[SET_MOTOR_SPEED] = 0;
+        control_command_quality += 30;
+    }
+
+    control_command_quality=control_command_quality-(100.00f/call_frequency); //control_command_quality reduce 1 every call
+    if(control_command_quality >= 100){
+        control_command_quality=100;
+    }
+    else if(control_command_quality <= 5){
+        control_command_quality = 5;
+    }
+    if(control_command_quality <=30 ){  //if control_command_quality is too low
+        robot_control_en = 0;  //motor control disable
+    }
+    else if(control_command_quality >=70 ){  //if control_command_quality is too low
+        robot_control_en = 1;  //motor control disable
+    }
+
+    if(robot_control_en == 0)
     {
-        motor_top.Enable_M1=1 ;                //motor enable
-        motor_top.Enable_M2=1 ;
-				#if ROBOT_WHEEL_MODEL > 2  
-				motor_top.Enable_M3=1 ;
-				#endif
-				#if ROBOT_WHEEL_MODEL > 3  
-				motor_top.Enable_M4=1 ;
-				#endif
+        motor_top.expect_angle_speed_m1=0;     //set motor Expect Speed 0
+        motor_top.expect_angle_speed_m2=0;
+#if ROBOT_WHEEL_MODEL > 2
+        motor_top.expect_angle_speed_m3=0;
+#endif
+#if ROBOT_WHEEL_MODEL > 3
+        motor_top.expect_angle_speed_m4=0;
+#endif
+    }
+    else if(robot_control_en == 1)
+    {
+        motor_top.enable_m1=1 ;                //set motor enable
+        motor_top.enable_m2=1 ;
+#if ROBOT_WHEEL_MODEL > 2
+        motor_top.enable_m3=1 ;
+#endif
+#if ROBOT_WHEEL_MODEL > 3
+        motor_top.enable_m4=1 ;
+#endif
 
-				motor_top.Expect_Angle_Speed_M1 = (1-L_Filter) *motor_top.Expect_Angle_Speed_M1 +
-				L_Filter* Expect_Motor_Angle_Speed.M1 ;                  //Speed Low-pass filter
-				motor_top.Expect_Angle_Speed_M2 = (1-L_Filter) *motor_top.Expect_Angle_Speed_M2 +
-				L_Filter* Expect_Motor_Angle_Speed.M2 ;
+        motor_top.expect_angle_speed_m1 = (1-l_filter) *motor_top.expect_angle_speed_m1 +
+                l_filter* my_robot.expect_motor_speed.servo1*radian_to_degree ;                  //Speed Low-pass filter
+        motor_top.expect_angle_speed_m2 = (1-l_filter) *motor_top.expect_angle_speed_m2 +
+                l_filter* my_robot.expect_motor_speed.servo2*radian_to_degree ;
 
-				#if ROBOT_WHEEL_MODEL > 2  
-				motor_top.Expect_Angle_Speed_M3 = (1-L_Filter) *motor_top.Expect_Angle_Speed_M3 +
-				L_Filter* Expect_Motor_Angle_Speed.M3 ;
-				#endif
-				#if ROBOT_WHEEL_MODEL > 3  
-				motor_top.Expect_Angle_Speed_M4 = (1-L_Filter) *motor_top.Expect_Angle_Speed_M4 +
-				L_Filter* Expect_Motor_Angle_Speed.M4 ;
-				#endif
+#if ROBOT_WHEEL_MODEL > 2
+        motor_top.expect_angle_speed_m3 = (1-l_filter) *motor_top.expect_angle_speed_m3 +
+                l_filter* my_robot.expect_motor_speed.servo3*radian_to_degree ;
+#endif
+#if ROBOT_WHEEL_MODEL > 3
+        motor_top.expect_angle_speed_m4 = (1-l_filter) *motor_top.expect_angle_speed_m4 +
+                l_filter* my_robot.expect_motor_speed.servo4*radian_to_degree ;
+#endif
     }
 
 }
 
 /***********************************************************************************************************************
-* Function:     void ROBOT_WHEEL::Coordinate_Calculation_3WD(void)
+* Function:     void RobotWheel::headControl(void)         
 *
 * Scope:        private
 *
-* Description:  3轮式底盘坐标解算  编码器的数据分析 坐标解算  解算出x，y，w,给上位机
-*               建议100HZ运行
+* Description:  control your robotic head
 *
 * Arguments:
 *
@@ -213,45 +303,85 @@ void ROBOT_WHEEL::Chassis_Control(void)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.10.1   creat
 ***********************************************************************************************************************/
-void ROBOT_WHEEL::Coordinate_Calculation(void)
+void RobotWheel::headControl(void)
+{
+#ifdef  DRIVER_SERVO
+    my_robot.measure_head1_state.pitch = hf_head.measure_head_pitch;
+    my_robot.measure_head1_state.yaw = hf_head.measure_head_yaw;
+    my_robot.measure_head2_state.pitch = 0;
+    my_robot.measure_head2_state.yaw =0;
+
+    if( hf_link_node_pointer->receive_package_renew[SET_HEAD_1]==1 ){
+        hf_link_node_pointer->receive_package_renew[SET_HEAD_1]=0;
+        hf_head.set_head_state_renew=1;
+        hf_head.expect_head_pitch = my_robot.expect_head1_state.pitch;
+        hf_head.expect_head_yaw = my_robot.expect_head1_state.yaw;
+    }
+#endif
+}
+
+/***********************************************************************************************************************
+* Function:     void RobotWheel::armControl(void)       
+*
+* Scope:        private
+*
+* Description:  control your robotic arm
+*
+* Arguments:
+*
+* Return:
+*
+* Cpu_Time:  
+*
+* History:
+***********************************************************************************************************************/
+void RobotWheel::armControl(void)
 {
 
-		static ROBOT_MOTOR D_Len_M_Filter;
-	
-    D_Len_M_Filter.M1 = ( motor_top.motor1.past_angle/360 ) * 2 * PI_ * WHEEL_R;
-		motor_top.motor1.past_angle=0;       //清0记录的总角度
-    Mesure_Motor_Distance.M1 += D_Len_M_Filter.M1 ;
 
-		
-    D_Len_M_Filter.M2 = ( motor_top.motor2.past_angle/360 ) * 2 * PI_ * WHEEL_R;
-		motor_top.motor2.past_angle=0;
-    Mesure_Motor_Distance.M2 += D_Len_M_Filter.M2 ;
+}
 
-		#if ROBOT_WHEEL_MODEL > 2  
-		D_Len_M_Filter.M3 = ( motor_top.motor3.past_angle/360 ) * 2 * PI_ * WHEEL_R;   
-		motor_top.motor3.past_angle=0;
-		Mesure_Motor_Distance.M3 += D_Len_M_Filter.M3 ;
-		#endif
-	
-		#if ROBOT_WHEEL_MODEL > 3  
-		D_Len_M_Filter.M4 = ( motor_top.motor4.past_angle/360 ) * 2 * PI_ * WHEEL_R;   
-		motor_top.motor4.past_angle=0; 
-		Mesure_Motor_Distance.M4 += D_Len_M_Filter.M4 ;
-		#endif
-		
-#if Coordinate_Calculation_IMU == 1 
-    //    Mesure_Global_Coordinate.Z=imu_arithmetic_model.Fus_Angle.yaw ;   //如果IMU在位
-    //    Mesure_Robot_Coordinate.Z=imu_arithmetic_model.Fus_Angle.yaw ;
+/***********************************************************************************************************************
+* Function:     void RobotWheel::robotCoordCalc(void)
+*
+* Scope:        private
+*
+* Description:  calculating coordinates, this is a  common methods  for robot localization
+*               
+*
+* Arguments:
+*
+* Return:
+*
+* Cpu_Time:  
+*
+* History:
+***********************************************************************************************************************/
+void RobotWheel::robotCoordCalc(void)
+{
+
+    d_motor_len_filter_.m1 = motor_top.motor1.get_d_past_angel() * degree_to_radian * get_robot_wheel_radius();
+
+    d_motor_len_filter_.m2 = motor_top.motor2.get_d_past_angel() * degree_to_radian * get_robot_wheel_radius();
+
+#if ROBOT_WHEEL_MODEL > 2
+    d_motor_len_filter_.m3 = motor_top.motor3.get_d_past_angel() * degree_to_radian * get_robot_wheel_radius();
+#endif
+
+#if ROBOT_WHEEL_MODEL > 3
+    d_motor_len_filter_.m4 = motor_top.motor4.past_angle * degree_to_radian * WHEEL_R;
+#endif
+
+#if COORD_CALC_IMU_EN == 1 
+    //measure_global_coordinate.Z=imu_arithmetic_model.Fus_Angle.yaw ;   //use the IMU data to calculating coordinates
+    //measure_robot_coordinate.Z=imu_arithmetic_model.Fus_Angle.yaw ;
 #endif
 
     //need time stm32F1 330us  stm32F4+NOFPU 64~80us   stm32F4+FPU 8~16us
-    Get_Global_Coordinate( (float *)&D_Len_M_Filter , (float*)&Mesure_Global_Coordinate);
+    getGlobalCoordinate( (float* )&d_motor_len_filter_ , (float* )&my_robot.measure_global_coordinate);
     //need time stm32F1 20us  stm32F4+FPU 0~2us
-    Get_Robot_Coordinate( (float *)&D_Len_M_Filter , (float*)&Mesure_Robot_Coordinate);
+    getRobotCoordinate( (float* )&d_motor_len_filter_ , (float* )&my_robot.measure_robot_coordinate);
 
 }
-
-
 

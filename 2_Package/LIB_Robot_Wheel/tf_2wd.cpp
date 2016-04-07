@@ -26,16 +26,11 @@
 
 #if ROBOT_WHEEL_MODEL == 2
 
-
 TF_2WD tf_2w;
 
-TF_2WD::TF_2WD()
-{
-
-}
 
 /***********************************************************************************************************************
-* Function:     void TF_3WD::Robot_To_Motor_tf(float *Robot , float *Motor , float robot_r)  
+* Function:     void TF_3WD::robotToMotorTF(float* robot , float* motor , float robot_r)  
 *
 * Scope:        public
 *
@@ -52,15 +47,15 @@ TF_2WD::TF_2WD()
 * History:
 * by   mawenke   2015.10.1   creat
 ***********************************************************************************************************************/
-void TF_2WD::Robot_To_Motor_tf(float *Robot , float *Motor , float robot_r)   
+void TF_2WD::robotToMotorTF(float* robot , float* motor , float robot_r)   
 {
-    *Motor = -1 * (*Robot) + 0 * (*(Robot+1)) + robot_r * (*(Robot+2)) ;
-    *(Motor + 1) =  1 * (*Robot) + 0 * (*(Robot+1)) + robot_r * (*(Robot+2)) ;
+    *motor = -1 * (*robot) + 0 * (*(robot+1)) + robot_r * (*(robot+2)) ;
+    *(motor + 1) =  1 * (*robot) + 0 * (*(robot+1)) + robot_r * (*(robot+2)) ;
 }
 
 
 /***********************************************************************************************************************
-* Function:     void TF_3WD::Motor_To_Robot_tf(float *Motor , float *Global , float robot_r)  
+* Function:     void TF_3WD::MotorToRobotTF(float* motor , float* global , float robot_r)  
 *
 * Scope:        public
 *
@@ -77,17 +72,17 @@ void TF_2WD::Robot_To_Motor_tf(float *Robot , float *Motor , float robot_r)
 * History:
 * by   mawenke   2015.10.1   creat
 ***********************************************************************************************************************/
-void TF_2WD::Motor_To_Robot_tf(float *Motor , float *Robot , float robot_r)   
+void TF_2WD::motorToRobotTF(float* motor , float* robot , float robot_r)
 {
-    *Robot = -0.5f * (*Motor) + 0.5f* (*(Motor+1));
-    *(Robot + 1) =  0 * (*Motor)  + 0 * (*(Motor+1));
-    *(Robot + 2) =  ( 0.5f/ (float)robot_r ) * ( (*Motor) + (*(Motor+1)) );
+    *robot = -0.5f * (*motor) + 0.5f* (*(motor+1));
+    *(robot + 1) =  0 * (*motor)  + 0 * (*(motor+1));
+    *(robot + 2) =  ( 0.5f/ (float)robot_r ) * ( (*motor) + (*(motor+1)) );
 }
 
 
 
 /***********************************************************************************************************************
-* Function:     void TF_2WD::Global_To_Robot_tf( float *Global , float *Robot , float R_theta)    
+* Function:     void TF_2WD::globalToRobotTF( float* global , float* robot , float R_theta)    
 *
 * Scope:        public
 *
@@ -104,16 +99,16 @@ void TF_2WD::Motor_To_Robot_tf(float *Motor , float *Robot , float robot_r)
 * History:
 * by   mawenke   2015.10.1   creat
 ***********************************************************************************************************************/
-void TF_2WD::Global_To_Robot_tf( float *Global , float *Robot , float R_theta)   
+void TF_2WD::globalToRobotTF( float* global , float* robot , float R_theta)   
 {
-    *Robot =  (float)( cos(R_theta) * (*Global) + sin(R_theta) * (*(Global+1)) + 0 * (*(Global+2)) );
-    *(Robot + 1) = (float)( -sin(R_theta) * (*Global) + cos(R_theta) * (*(Global+1)) + 0 * (*(Global+2)) );
-    *(Robot + 2) =   0 * (*Global) + 0 * (*(Global+1)) + 1 * (*(Global+2)) ;
+    *robot =  (float)( cos(R_theta) * (*global) + sin(R_theta) * (*(global+1)) + 0 * (*(global+2)) );
+    *(robot + 1) = (float)( -sin(R_theta) * (*global) + cos(R_theta) * (*(global+1)) + 0 * (*(global+2)) );
+    *(robot + 2) =   0 * (*global) + 0 * (*(global+1)) + 1 * (*(global+2)) ;
 }
 
 
 /***********************************************************************************************************************
-* Function:     void TF_2WD::Robot_To_Global_tf(float *Robot , float *Global ,float R_theta)  
+* Function:     void TF_2WD::robotToGlobalTF(float* robot , float* global ,float R_theta)  
 *
 * Scope:        public
 *
@@ -130,27 +125,27 @@ void TF_2WD::Global_To_Robot_tf( float *Global , float *Robot , float R_theta)
 * History:
 * by   mawenke   2015.10.1   creat
 ***********************************************************************************************************************/
-void TF_2WD::Robot_To_Global_tf(float *Robot , float *Global ,float R_theta)   
+void TF_2WD::robotToGlobalTF(float* robot , float* global ,float R_theta)   
 {
-    *Global = cos(R_theta)*(*Robot) - sin(R_theta) * (*(Robot+1)) +  0 * (*(Robot+2)) ;
-    *(Global + 1) =  sin(R_theta) * (*Robot) + cos(R_theta) * (*(Robot+1))  + 0 * (*(Robot+2)) ;
-    *(Global + 2) =  0 * (*Robot) + 0 * (*(Robot+1)) + 1 * (*(Robot+2)) ;
+    *global = cos(R_theta)*(*robot) - sin(R_theta) * (*(robot+1)) +  0 * (*(robot+2)) ;
+    *(global + 1) =  sin(R_theta) * (*robot) + cos(R_theta) * (*(robot+1))  + 0 * (*(robot+2)) ;
+    *(global + 2) =  0 * (*robot) + 0 * (*(robot+1)) + 1 * (*(robot+2)) ;
 }
 
 
 
-void TF_2WD::Global_To_Motor_tf(float *Global , float *Motor ,float R_theta ,float robot_r)   
+void TF_2WD::globalToMotorTF(float* global , float* motor ,float R_theta ,float robot_r)   
 {
 
 
 }
 
 
-void TF_2WD::Motor_To_Global_tf(float *Motor , float *Global ,float R_theta ,float robot_r)   
+void TF_2WD::motorToGlobalTF(float* motor , float* global ,float R_theta ,float robot_r)   
 {
-    *Global = (-cos(R_theta)/2)*(*Motor) + (cos(R_theta)/2)*(*(Motor+1)) ;
-    *(Global + 1) =  (-sin(R_theta)/2) * (*Motor) +  (sin(R_theta)/2) * (*(Motor+1)) ;
-    *(Global + 2) =  (0.5f/robot_r) * (*Motor) + (0.5f/robot_r) * (*(Motor+1)) ;
+    *global = (-cos(R_theta)/2)*(*motor) + (cos(R_theta)/2)*(*(motor+1)) ;
+    *(global + 1) =  (-sin(R_theta)/2) * (*motor) +  (sin(R_theta)/2) * (*(motor+1)) ;
+    *(global + 2) =  (0.5f/robot_r) * (*motor) + (0.5f/robot_r) * (*(motor+1)) ;
 }
 
 
@@ -160,43 +155,43 @@ void TF_2WD::Motor_To_Global_tf(float *Motor , float *Global ,float R_theta ,flo
 ***                                          Code of External Interface                                              ***
 ***                                                                                                                  ***
 ***********************************************************************************************************************/
+
 //set global speed
 //2WD 无法走全局速度
-void TF_2WD::Global_Speed_Set(float* Global_Speed , float* Expect_Motor_Speed , 
-                              float Global_Coordinat_Z)
+void TF_2WD::globalSpeedSet(float* expect_global_speed , float* expect_motor_speed , 
+                            float global_coordinat_z)
 {
 
-	
+
 }
 
-
-//set Robot speed
-void TF_2WD::Robot_Speed_Set(float* Robot_Speed , float* Expect_Motor_Speed)  
+//set Robot speed 角度： 弧度 radian
+void TF_2WD::robotSpeedSet(float* expect_robot_speed , float* expect_motor_speed)  
 {
     static float Motor_Line_Speed[3] ;
-    Robot_To_Motor_tf(Robot_Speed , Motor_Line_Speed , ROBOT_R) ;
-    *Expect_Motor_Speed  = ( Motor_Line_Speed[0] / WHEEL_R ) * ( 180/PI_ );
-    *(Expect_Motor_Speed+1)  = ( Motor_Line_Speed[1] / WHEEL_R ) * ( 180/PI_ );
+    robotToMotorTF(expect_robot_speed , Motor_Line_Speed , robot_body_radius_) ;
+    *expect_motor_speed  = ( Motor_Line_Speed[0] / robot_wheel_radius_ );
+    *(expect_motor_speed+1)  = ( Motor_Line_Speed[1] / robot_wheel_radius_ );
 }
 
 //get Robot Global Coordinate
-void TF_2WD::Get_Global_Coordinate(float* D_Len_M_Filter , float* Mesure_Global_Coordinate)  
+void TF_2WD::getGlobalCoordinate(float* d_motor_len_filter , float* measure_global_coordinate)  
 {
     static float D_Global_Coordinate[3] ;
-    Motor_To_Global_tf(D_Len_M_Filter , D_Global_Coordinate , *(Mesure_Global_Coordinate+2) , ROBOT_R);
-    *Mesure_Global_Coordinate += D_Global_Coordinate[0]*Coordinate_Calibration_X;
-    *(Mesure_Global_Coordinate+1) += D_Global_Coordinate[1]*Coordinate_Calibration_Y;
-    *(Mesure_Global_Coordinate+2) += D_Global_Coordinate[2]*Coordinate_Calibration_Z;
+    motorToGlobalTF(d_motor_len_filter , D_Global_Coordinate , *(measure_global_coordinate+2) , robot_body_radius_);
+    *measure_global_coordinate += D_Global_Coordinate[0];
+    *(measure_global_coordinate+1) += D_Global_Coordinate[1];
+    *(measure_global_coordinate+2) += D_Global_Coordinate[2];
 }	
 
 //get Robot Robot Coordinate
-void TF_2WD::Get_Robot_Coordinate(float* D_Len_M_Filter , float* Mesure_Robot_Coordinate)  
+void TF_2WD::getRobotCoordinate(float* d_motor_len_filter , float* measure_robot_coordinate)  
 {
     static float D_Robot_Coordinate[3] ;
-    Motor_To_Robot_tf( D_Len_M_Filter , D_Robot_Coordinate , ROBOT_R) ;
-    *Mesure_Robot_Coordinate += D_Robot_Coordinate[0]*Coordinate_Calibration_X;
-    *(Mesure_Robot_Coordinate+1) += D_Robot_Coordinate[1]*Coordinate_Calibration_Y;
-    *(Mesure_Robot_Coordinate+2) += D_Robot_Coordinate[2]*Coordinate_Calibration_Z;
+    motorToRobotTF( d_motor_len_filter , D_Robot_Coordinate , robot_body_radius_) ;
+    *measure_robot_coordinate += D_Robot_Coordinate[0];
+    *(measure_robot_coordinate+1) += D_Robot_Coordinate[1];
+    *(measure_robot_coordinate+2) += D_Robot_Coordinate[2];
 }	
 
 #endif   //#if ROBOT_WHEEL_MODEL == 2

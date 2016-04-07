@@ -6,7 +6,6 @@ extern "C" {
 #endif 
 
 #include "stm32f4xx.h"
-#include "main_config.h"
 
 //start address of FLASH
 #define STM32_FLASH_BASE 0x08000000 	//start address of STM32 FLASH

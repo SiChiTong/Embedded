@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
-* Copyright (C)  ALIENTEK STM32F407 广州市星翼电子科技有限公司 2014-2024 
+* Copyright (C)  ALIENTEK STM32F407
 * FileName:   rtc.c
 * Contact:    QQ Exchange Group -- 521037187
 * Version :   V2.0
@@ -29,7 +29,6 @@ extern "C" {
 
 CALENDAR calendar_r;//clock structure
 
-#if BSP_CFG_RTC_EN > 0u
 /***********************************************************************************************************************
 * Function:    ErrorStatus RTC_Set_Time(unsigned char hour,unsigned char min,unsigned char sec,unsigned char ampm)
 * 
@@ -46,7 +45,6 @@ CALENDAR calendar_r;//clock structure
 * 
 * History:
 * ALIENTEK STM32F407
-* by   mawenke   2015.12.1  update   
 ***********************************************************************************************************************/
 ErrorStatus RTC_Set_Time(unsigned char hour,unsigned char min,unsigned char sec,unsigned char ampm)
 {
@@ -220,7 +218,6 @@ unsigned char HF_RTC_Init(void)
 * 
 * History: 
 * ALIENTEK STM32F407
-* by   mawenke   2015.12.1  update 
 ***********************************************************************************************************************/
 void RTC_Set_AlarmA(unsigned char week,unsigned char hour,unsigned char min,unsigned char sec)
 { 
@@ -287,7 +284,6 @@ void RTC_Set_AlarmA(unsigned char week,unsigned char hour,unsigned char min,unsi
 * 
 * History: 
 * ALIENTEK STM32F407
-* by   mawenke   2015.12.1  update 
 ***********************************************************************************************************************/
 void RTC_Set_WakeUp(u32 wksel,u16 cnt)
 { 
@@ -403,7 +399,6 @@ unsigned char const table_week[12]={0,3,3,6,1,4,6,2,5,0,3,5}; //month correct da
 * 
 * History:  
 * ALIENTEK STM32F407
-* by   mawenke   2015.12.1  update  
 ***********************************************************************************************************************/
 unsigned char RTC_Get_Week(unsigned short int year,unsigned char month,unsigned char day)
 {	
@@ -445,9 +440,6 @@ void HF_RTC_Time_Renew(void)
     RTC_Get_Date(&calendar_r.w_year , &calendar_r.w_month , &calendar_r.w_date , &calendar_r.week); //get RTC date
     RTC_Get_Time(&calendar_r.hour,&calendar_r.min,&calendar_r.sec,&calendar_r.ampm);	//get RTC time
 }
-
-
-#endif 
 
 #ifdef __cplusplus
 }

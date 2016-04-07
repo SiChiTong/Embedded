@@ -46,8 +46,6 @@ HF_System_Data system_data;
 * Cpu_Time:  stm32f1(35 us)  stm32f4+nofpu(unknow us) stm32f4+fpu(unknow us)
 *
 * History:
-* by   mawenke   2015.12.1   creat
-* by  LiuDong    2016.1.8    update the name of function
 ***********************************************************************************************************************/
 static const float Battery_Voltage_Alarm=10.00 ;
 static const float Battery_Proportion = 11.00 ;
@@ -57,24 +55,30 @@ static void System_Monitoring(void)
     static unsigned char Beep_Alarm_i;
     system_data.System_Time = GET_System_time();   //system working time (unit:us), start after power-on
     system_data.CPU_Temperature = adc_dac_data_r.Cpu_Standard_T;
-		#if  SYSTEM_SUPPORT_OS > 0u   
+#if  SYSTEM_SUPPORT_OS > 0u
+		//support UCOSII
+		#ifdef 	OS_CRITICAL_METHOD						
+		#endif                                        
+		//support UCOSIII                             
+		#ifdef 	CPU_CFG_CRITICAL_METHOD				
 		system_data.CPU_Usage=OSStatTaskCPUUsage;
-		#endif	
-		 //0.33 is the loss voltage of diode
-    system_data.Battery_Voltage = 0.33f + adc_dac_data_r.ADC_Standard_Value[0] * Battery_Proportion ;  
+		#endif
+#endif
+    //0.33 is the loss voltage of diode
+    system_data.Battery_Voltage = 0.33f + adc_dac_data_r.ADC_Standard_Value[0] * Battery_Proportion ;
     if( (system_data.Battery_Voltage > 7) && (system_data.Battery_Voltage < Battery_Voltage_Alarm))
     {
-			Beep_Alarm_i++;
-			if(Beep_Alarm_i>=20)
-			{
-				 BEEP_TOGGLE();
-			}
+        Beep_Alarm_i++;
+        if(Beep_Alarm_i>=20)
+        {
+           HF_Set_Beep_State(0,2);
+        }
     }
-		else if( system_data.Battery_Voltage > (Battery_Voltage_Alarm+0.2f) )
-		{
-		   Beep_Alarm_i=0;
-			 BEEP_OFF();
-		}
+    else if( system_data.Battery_Voltage > (Battery_Voltage_Alarm+0.2f) )
+    {
+        Beep_Alarm_i=0;
+        HF_Set_Beep_State(0,0);
+    }
 }
 
 
@@ -112,40 +116,6 @@ void HF_BSP_Cycle_Call(void)  //100HZ
 
 }
 
-/***********************************************************************************************************************
-* Function:     void RCC_Init(void)
-*
-* Scope:        private
-*
-* Description:  Enable all timers
-*
-* Arguments:
-*
-* Return:
-*
-* Cpu_Time:  
-*
-* History:
-***********************************************************************************************************************/
-//void RCC_Init(void)
-//{  	
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);
-
-//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6,ENABLE);
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7,ENABLE);
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5 ,ENABLE);
-//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-//		
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN2, ENABLE);
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2,ENABLE);
-//	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3,ENABLE);
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1,ENABLE);
-//}
 
 /***********************************************************************************************************************
 * Function:     void BSP_Init(void)
@@ -161,8 +131,6 @@ void HF_BSP_Cycle_Call(void)  //100HZ
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
-* by  LiuDong    2016.1.8       V1.57       update the name of function
 ***********************************************************************************************************************/
 void HF_BSP_Init(void)
 {
@@ -203,7 +171,7 @@ void HF_BSP_Init(void)
 #endif
     
 #if	BSP_CFG_PWMIN_EN > 0u
-    HF_PwmIn_Init();                 //Initialize capturing PWM. Using 5 channels maximum. PC0 PC1 PC2 PC3 PC4
+    //HF_PwmIn_Init();                 //Initialize capturing PWM. Using 5 channels maximum. PC0 PC1 PC2 PC3 PC4
 #endif
     
 #if	BSP_CFG_PWMOUT_EN > 0u
@@ -221,9 +189,9 @@ void HF_BSP_Init(void)
 #if	BSP_CFG_CAN_EN > 0u
 #endif
 
-    HF_Set_Beep_State(1);
+    HF_Set_Beep_State(0,1);
     delay_ms(500);
-    HF_Set_Beep_State(0);
+    HF_Set_Beep_State(0,0);
 }
 
 #ifdef __cplusplus

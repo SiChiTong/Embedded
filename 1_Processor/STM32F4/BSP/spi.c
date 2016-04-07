@@ -16,15 +16,12 @@
 *        STM32F4--------------
 *        SPI1 --- PA5,6,7   SPI2 --- PB13,14,15
 ***********************************************************************************************************************/
-
 #ifdef __cplusplus
 extern "C" {
 #endif 
 
 #include "spi.h"
 #include "nvic.h"	 
-
-#if BSP_CFG_SPI_EN > 0u 
 
 /***********************************************************************************************************************
 * Function:     HF_SPI_Init(SPI_TypeDef *SPIx , unsigned char GPIO_AF) 
@@ -42,7 +39,6 @@ extern "C" {
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_SPI_Init(SPI_TypeDef *SPIx , unsigned char GPIO_AF)
 {	 
@@ -91,9 +87,9 @@ void HF_SPI_Init(SPI_TypeDef *SPIx , unsigned char GPIO_AF)
         else if(GPIO_AF == 1)
         {
             
-        }                                                       //reset SPI2
-        //	 RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2,ENABLE);;//stop reset SPI2
-        //	 RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2,DISABLE)
+        }                                                       
+        //	 RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2,ENABLE);  //reset SPI2
+        //	 RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2,DISABLE); //stop reset SPI2
     }
     
     SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;  //SPI设置为两线全双工
@@ -131,13 +127,11 @@ void HF_SPI_Init(SPI_TypeDef *SPIx , unsigned char GPIO_AF)
 ***********************************************************************************************************************/
 unsigned char HF_SPI_ReadWriteByte(SPI_TypeDef *SPIx , unsigned char TxData)                    
 {
-    while (SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_TXE) == RESET);      //发送缓存标志位为空
+    while (SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_TXE) == RESET);     //发送缓存标志位为空
     SPI_I2S_SendData(SPIx, TxData);                                     //通过外设SPI发送一个数据
     while (SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_RXNE) == RESET);    //接收缓存标志位不为空
     return SPI_I2S_ReceiveData(SPIx);                                   //通过SPI返回接收数据
 }	
-
-#endif  //#if BSP_CFG_SPI_EN > 0u 
 
 #ifdef __cplusplus
 }

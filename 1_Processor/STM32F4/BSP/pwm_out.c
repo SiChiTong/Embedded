@@ -31,17 +31,7 @@ extern "C" {
 
 #include "pwm_out.h"
 
-
 PWM_Out_Data pwm_out_data_r;
-
-
-#if BSP_CFG_PWMOUT_EN > 0u
-
-/***********************************************************************************************************************
-***                                                                                                                  ***
-***                                          Code of External Interface                                              ***
-***                                                                                                                  ***
-***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 * Function:      void HF_PwmOut_Init(TIM_TypeDef* TIMx)
@@ -57,7 +47,6 @@ PWM_Out_Data pwm_out_data_r;
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
                     , unsigned short int Period , unsigned char GPIO_AF)
@@ -184,7 +173,6 @@ void HF_PwmOut_Init(TIM_TypeDef* TIMx , unsigned short int Prescaler
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 //set Pulse Width of TIM1
 void Pwm_Set_TIM1_CCR1(unsigned short int Pwm_Value)
@@ -261,8 +249,6 @@ void Pwm_Set_TIM12_CCR2(unsigned short int Pwm_Value)
     TIM_SetCompare2(TIM12,Pwm_Value);
     pwm_out_data_r.TIM12_PWM2 = Pwm_Value ;
 }
-
-#endif //#if BSP_CFG_PWMOUT_EN > 0u
 
 #ifdef __cplusplus
 }

@@ -14,8 +14,8 @@
 *
 * Description:   syetem config file
 ***********************************************************************************************************************/
-#ifndef __main_config_H__
-#define __main_config_H__
+#ifndef MAIN_CONFIG_H
+#define MAIN_CONFIG_H
 
 /*****************************system config****************************************************************************/
 #define Hands_Free_Version  2.0                   //THE Version of HANDS FREE
@@ -45,14 +45,15 @@
 
 
 /*****************************************package config***************************************************************/
-#define LIB_Math
-#define Driver_IMU
-#define Driver_Motor_Contorl
-#define Driver_Servo
-#define LIB_Robot_Wheel
-#define LIB_HF_Link
-#define LIB_Sbus_Ppm
-
+#define LIB_COMMON
+#define LIB_ROBOT_ABSTRACT
+#define LIB_MATH
+#define DRIVER_IMU
+#define DRIVER_MOTOR
+#define DRIVER_SERVO
+#define LIB_ROBOT_WHEEL
+#define LIB_HF_LINK
+#define LIB_SBUS_PPM
 /**********************************************************************************************************************/
 
 
@@ -71,4 +72,4 @@
 
 /**********************************************************************************************************************/
 
-#endif
+#endif // #ifndef MAIN_CONFIG_H

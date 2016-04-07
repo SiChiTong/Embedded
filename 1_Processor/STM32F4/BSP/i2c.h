@@ -1,12 +1,11 @@
-#ifndef __i2c_H__
-#define __i2c_H__
+#ifndef I2C_H
+#define I2C_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif 
 
 #include "stm32f4xx.h"
-#include "main_config.h"
 
 void HF_Hardware_I2C_Init(I2C_TypeDef *I2Cx, unsigned char GPIO_AF);
 
@@ -75,11 +74,11 @@ int Hardware_I2C_Read_Buf(I2C_TypeDef *I2Cx, unsigned char Equipment_Address, un
 
 /*************************HF_Simulation_I2C3***************************************************************************/
 #define RCC_I2C3_SCL		  RCC_AHB1Periph_GPIOB
-#define GPIO_I2C3_SCL	      GPIOB
+#define GPIO_I2C3_SCL	    GPIOB
 #define I2C3_Pin_SCL		  GPIO_Pin_6
 
 #define RCC_I2C3_SDA		  RCC_AHB1Periph_GPIOB
-#define GPIO_I2C3_SDA	      GPIOB
+#define GPIO_I2C3_SDA	    GPIOB
 #define I2C3_Pin_SDA		  GPIO_Pin_7
 
 #define SCL3_H         GPIO_I2C3_SCL->BSRRL  = I2C3_Pin_SCL
@@ -104,6 +103,6 @@ int Simulat_I2C_Read_Buf(uint8_t HF_I2Cx , uint8_t Equipment_Address,uint8_t REG
 }
 #endif 
 
-#endif //__i2c_H__
+#endif // #ifndef I2C_H
 
 

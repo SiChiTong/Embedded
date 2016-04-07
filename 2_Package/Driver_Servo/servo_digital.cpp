@@ -15,7 +15,7 @@
 *
 ***********************************************************************************************************************/
 
-#include "servo_digital_driver.h"
+#include "servo_digital.h"
 
 #define	OK                      0x00     // 返回状态正常或该指令完成
 #define	ResServoPosInfo         0x01     // 请求舵机位置信息
@@ -43,7 +43,7 @@
 #define P_CCW_ANGLE_LIMIT_L   8									  //最大角度（L）（CCW代表逆时针）
 #define P_CCW_ANGLE_LIMIT_H   9									  //最大角度（H）
 #define P_SYSTEM_DATA2        10								  //（保留）
-#define P_LIMIT_TEMPERATURE   11							    //最高的界限温度
+#define P_LIMIT_TEMPERATURE   11							      //最高的界限温度
 #define P_DOWN_LIMIT_VOLTAGE  12								  //最低的界限电压
 #define P_UP_LIMIT_VOLTAGE    13								  //最高的界限电压
 #define P_MAX_TORQUE_L        14								  //最大转力矩L
@@ -57,7 +57,7 @@
 #define P_UP_CALIBRATION_L    22
 #define P_UP_CALIBRATION_H    23
 
-#define P_TORQUE_ENABLE          (24)							//激活扭矩
+#define P_TORQUE_ENABLE          (24)						  //激活扭矩
 #define P_LED                    (25)						  //LED
 #define P_CW_COMPLIANCE_MARGIN   (26)						  //顺时针柔性边距
 #define P_CCW_COMPLIANCE_MARGIN  (27)						  //逆时针柔性边距
@@ -68,12 +68,12 @@
 #define P_GOAL_SPEED_L           (32)					 	  //运动速度（低）
 #define P_GOAL_SPEED_H           (33)					    //运动速度（高）
 #define P_TORQUE_LIMIT_L         (34)					    //扭矩限制（低）
-#define P_TORQUE_LIMIT_H         (35)					    //扭矩限制（高）
-#define P_PRESENT_POSITION_L     (36)					    //当前位置（低）
-#define P_PRESENT_POSITION_H     (37)				      //当前位置（高）
-#define P_PRESENT_SPEED_L        (38)				      //当前速度（低）
-#define P_PRESENT_SPEED_H        (39)				      //当前速度（高）
-#define P_PRESENT_LOAD_L         (40)				      //当前负载（低）
+#define P_TORQUE_LIMIT_H         (35)					//扭矩限制（高）
+#define P_PRESENT_POSITION_L     (36)					//当前位置（低）
+#define P_PRESENT_POSITION_H     (37)				    //当前位置（高）
+#define P_PRESENT_SPEED_L        (38)				    //当前速度（低）
+#define P_PRESENT_SPEED_H        (39)				    //当前速度（高）
+#define P_PRESENT_LOAD_L         (40)				    //当前负载（低）
 #define P_PRESENT_LOAD_H         (41)			        //当前负载（高）
 #define P_PRESENT_VOLTAGE        (42)			        //当前电压
 #define P_PRESENT_TEMPERATURE    (43)			        //当前温度
@@ -86,7 +86,7 @@
 
 //--- Instruction ---
 #define INST_PING           0x01						//连通性检测程序,无操作，用来得到状态数据包	  
-#define INST_READ           0x02					  //数据读取,读取控制表中的数值
+#define INST_READ           0x02					    //数据读取,读取控制表中的数值
 #define INST_WRITE          0x03						//数据写入,向控制表中写入数值
 #define INST_REG_WRITE      0x04						//写入寄存器,和数据写入类似，但在操作指令给出之前处于备用模式.注册表写入指令和数据写入指令类似，但是两者指令包完成的时间是不同的
 #define INST_ACTION         0x05						//操作,引发写入的指令 ,即接收该指令后，执行INST_REG_WRITE的内容（避免延迟，舵机不同步），无返回状态包
@@ -109,7 +109,7 @@
 #define RX_TIMEOUT_COUNT1  (RX_TIMEOUT_COUNT2*10L)
 
 
-SERVO_D::SERVO_D()
+ServoDigital::ServoDigital()
 {
     gbpParameter[0]=0;
     gbRxBufferReadPointer=0;
@@ -123,20 +123,20 @@ SERVO_D::SERVO_D()
     delayCount=0;
 }
 
-void SERVO_D::AX_Servo_Init(void)
+void ServoDigital::axServoInit(void)
 {
 
     GPIO_InitTypeDef GPIO_InitStructure;
 
-#if Hardware_Platform == 1
+#if HARDWARE_PLATFORM== 1
 
-    HF_Usart_Init(SERVO_Control_USART,1000000,0);
+    HF_Usart_Init(SERVO_CONTROL_USART,1000000,0);
 
 #endif
 
-#if Hardware_Platform == 4
+#if HARDWARE_PLATFORM== 4
 
-    HF_Usart_Init(SERVO_Control_USART,1000000,2);
+    HF_Usart_Init(SERVO_CONTROL_USART,1000000,2);
     RCC_AHB1PeriphClockCmd(RCC_AX_IO , ENABLE);
 
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -152,7 +152,7 @@ void SERVO_D::AX_Servo_Init(void)
 
 }
 
-uint8_t SERVO_D::TxPacket(uint8_t bID, uint8_t bInstruction, uint8_t bParameterLength)
+uint8_t ServoDigital::TxPacket(uint8_t bID, uint8_t bInstruction, uint8_t bParameterLength)
 {
 
     //bParameterLength为参数PARAMETER长度，返回数据包长信息(除掉指令等)
@@ -176,18 +176,18 @@ uint8_t SERVO_D::TxPacket(uint8_t bID, uint8_t bInstruction, uint8_t bParameterL
     }
 
     gbpTxBuffer[bCount] = (uint8_t) (~bCheckSum); //Writing Checksum  with  Bit Inversion
-    //USART_ITConfig(SERVO_Control_USART, USART_IT_RXNE, ENABLE);
+    //USART_ITConfig(SERVO_CONTROL_USART, USART_IT_RXNE, ENABLE);
     CLEAR_BUFFER;
 
     AX_TXD;
 
     for (bCount = 0; bCount < bPacketLength; bCount++)
     {
-        while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET);
-        USART_SendData(SERVO_Control_USART, gbpTxBuffer[bCount]);
+        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
+        USART_SendData(SERVO_CONTROL_USART, gbpTxBuffer[bCount]);
     }
 
-    while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET);
+    while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
 
     AX_RXD;
     //for(i=0;i<0x8fff;i++);
@@ -199,7 +199,7 @@ uint8_t SERVO_D::TxPacket(uint8_t bID, uint8_t bInstruction, uint8_t bParameterL
  * bRxPacketLength 我们准备接收的数据长度
  * return 实际返回的数据长度（包括0XFF）
  * */
-uint8_t SERVO_D::RxPacket(uint8_t bRxPacketLength)
+uint8_t ServoDigital::RxPacket(uint8_t bRxPacketLength)
 {
 
     unsigned long ulCounter;
@@ -271,7 +271,7 @@ uint8_t SERVO_D::RxPacket(uint8_t bRxPacketLength)
             }
         }
     }
-    //	USART_ITConfig(SERVO_Control_USART, USART_IT_RXNE, DISABLE);
+    //	USART_ITConfig(SERVO_CONTROL_USART, USART_IT_RXNE, DISABLE);
     return bLength;
 }
 
@@ -283,7 +283,7 @@ uint8_t SERVO_D::RxPacket(uint8_t bRxPacketLength)
 //	;
 //}
 
-uint8_t SERVO_D::axTorqueOff(uint8_t bID) //释放舵机的力矩
+uint8_t ServoDigital::axTorqueOff(uint8_t bID) //释放舵机的力矩
 {
     gbpParameter[0] = P_TORQUE_ENABLE; //Address of Torque
     gbpParameter[1] = 0; //Writing Data
@@ -294,7 +294,7 @@ uint8_t SERVO_D::axTorqueOff(uint8_t bID) //释放舵机的力矩
         return NoSuchServo;
 }
 
-uint8_t SERVO_D::axTorqueOn(uint8_t bID) //使能舵机的力矩
+uint8_t ServoDigital::axTorqueOn(uint8_t bID) //使能舵机的力矩
 {
     gbpParameter[0] = P_TORQUE_ENABLE; //Address of Torque
     gbpParameter[1] = 1; //Writing Data
@@ -307,7 +307,7 @@ uint8_t SERVO_D::axTorqueOn(uint8_t bID) //使能舵机的力矩
 
 //给某个舵机位置
 //发送给某一个舵机一个要移动到的位置，包括三个参数 1ID 2位置 3速度
-uint8_t SERVO_D::axSendPosition(uint8_t bID, uint16_t target_pos, uint16_t target_speed)
+uint8_t ServoDigital::axSendPosition(uint8_t bID, uint16_t target_pos, uint16_t target_speed)
 {
     gbpParameter[0] = P_GOAL_POSITION_L; //Address of Firmware Version
     gbpParameter[1] = target_pos; //Writing Data P_GOAL_POSITION_L
@@ -335,7 +335,7 @@ uint8_t SERVO_D::axSendPosition(uint8_t bID, uint16_t target_pos, uint16_t targe
  * 		0xffff表示出错了
  * */
 
-uint16_t SERVO_D::axReadPosition(uint8_t bID) 			  //读取某个舵机的位置
+uint16_t ServoDigital::axReadPosition(uint8_t bID) 			  //读取某个舵机的位置
 {
     unsigned int Position;
     gbpParameter[0] = P_PRESENT_POSITION_L; //位置数据的起始地址 #define P_GOAL_POSITION_L (30) 参见数据手册
@@ -354,7 +354,7 @@ uint16_t SERVO_D::axReadPosition(uint8_t bID) 			  //读取某个舵机的位置
 }
 
 
-void SERVO_D::axTorqueOffAll(void)					//释放所有舵机力矩
+void ServoDigital::axTorqueOffAll(void)					//释放所有舵机力矩
 {
     gbpParameter[0] = P_TORQUE_ENABLE;
     gbpParameter[1] = 0x00;
@@ -362,7 +362,7 @@ void SERVO_D::axTorqueOffAll(void)					//释放所有舵机力矩
 
 }
 
-void SERVO_D::axTorqueOnAll(void) 				  //使能所有舵机力矩
+void ServoDigital::axTorqueOnAll(void) 				  //使能所有舵机力矩
 {
     gbpParameter[0] = P_TORQUE_ENABLE;
     gbpParameter[1] = 0x01;
@@ -378,7 +378,7 @@ void SERVO_D::axTorqueOnAll(void) 				  //使能所有舵机力矩
  * 检测连线的舵机数保存在全局数组axOlineNum
  * */
 
-void SERVO_D::getServoConnective(void) 
+void ServoDigital::getServoConnective(void)
 {		
     //PING舵机从几号开始
     uint8_t bCount;
@@ -390,12 +390,12 @@ void SERVO_D::getServoConnective(void)
             axOline[axOlineNum++] = bCount;
     }
 
-    Packet_Reply_AX(SERVO_Debug_USART, ServoIDNumber, (uint8_t *) &axOline[0], axOlineNum);
+    packageReplyToDebug(SERVO_DEBUG_USART, ServoIDNumber, (uint8_t *) &axOline[0], axOlineNum);
 
 }
 
 
-void SERVO_D::moveServoPosition(uint8_t *p, uint8_t num) 
+void ServoDigital::moveServoPosition(uint8_t *p, uint8_t num)
 {
     uint8_t i, err = OK;
     uint16_t pos;
@@ -404,11 +404,11 @@ void SERVO_D::moveServoPosition(uint8_t *p, uint8_t num)
         err |= axSendPosition(*p + (3 * i), pos, DEFAULTSPEED);
     }
 
-    Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+    packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
 }
 
 
-void SERVO_D::moveServoPosWithSpeed(uint8_t *p, uint8_t num) 
+void ServoDigital::moveServoPosWithSpeed(uint8_t *p, uint8_t num)
 {
     uint8_t i, err = OK;
     uint16_t pos, speed;
@@ -418,7 +418,7 @@ void SERVO_D::moveServoPosWithSpeed(uint8_t *p, uint8_t num)
         speed = *(p + (5* i) + 4) * 256 + *(p + (5 * i)+3 );
         err |= axSendPosition(*(p + (5 * i)), pos, speed);
     }
-    Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+    packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
 }
 
 /*GetServoPosition(uint8_t *p,uint8_t num)
@@ -428,7 +428,7 @@ void SERVO_D::moveServoPosWithSpeed(uint8_t *p, uint8_t num)
  * 		num
  * 			有数组有效长度
  * */
-void SERVO_D::getServoPosition(uint8_t *p, uint8_t num) 
+void ServoDigital::getServoPosition(uint8_t *p, uint8_t num)
 {
     uint8_t i;
     uint8_t retdata[100];
@@ -449,7 +449,7 @@ void SERVO_D::getServoPosition(uint8_t *p, uint8_t num)
             retdata[1] = tmp & 0xff;
             retdata[2] = (tmp&0xff00) >> 8;
         }
-        Packet_Reply_AX(SERVO_Debug_USART, ResServoPosInfo, (uint8_t *) &retdata[0],
+        packageReplyToDebug(SERVO_DEBUG_USART, ResServoPosInfo, (uint8_t *) &retdata[0],
                 axOlineNum * 3);
         break;
         //case 2:
@@ -461,13 +461,13 @@ void SERVO_D::getServoPosition(uint8_t *p, uint8_t num)
             retdata[i*3+1] = tmp & 0xff;
             retdata[i*3+2] = (tmp & 0xff00) >> 8;
         }
-        Packet_Reply_AX(SERVO_Debug_USART, ResServoPosInfo, (uint8_t *) &retdata,
-                        num * 3);
+        packageReplyToDebug(SERVO_DEBUG_USART, ResServoPosInfo, (uint8_t *) &retdata,
+                            num * 3);
         break;
     }
 }
 
-void SERVO_D::enableServo(uint8_t *p, uint8_t num) 
+void ServoDigital::enableServo(uint8_t *p, uint8_t num)
 {
     uint8_t err = OK;
     uint8_t i, *p0;
@@ -478,22 +478,22 @@ void SERVO_D::enableServo(uint8_t *p, uint8_t num)
         if (*p0 == BROADCASTING_ID) { //读取全部舵机pos
             axTorqueOnAll();
             err = OK;
-            Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
 
         } else {
             err = axTorqueOn(*p0);
-            Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
         }
         break;
     default:
         for (i = 0; i < num; i++)
             err |= axTorqueOn(*p0++);
-        Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+        packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
         break;
     }
 }
 
-void SERVO_D::disableServo(uint8_t *p, uint8_t num) 
+void ServoDigital::disableServo(uint8_t *p, uint8_t num)
 {
     uint8_t err = OK;
     uint8_t i, *p0;
@@ -503,23 +503,23 @@ void SERVO_D::disableServo(uint8_t *p, uint8_t num)
         if (*p0 == BROADCASTING_ID) { //读取全部舵机pos
             axTorqueOffAll();
             err = OK;
-            Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
         } else {
             err = axTorqueOff(*p0++);
-            Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+            packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
         }
         break;
     case 2:
         for (i = 0; i < num; i++)
             err |= axTorqueOff(*p0);
-        Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+        packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
         break;
     }
 }
 
 
 
-void SERVO_D::executeInstruction(uint8_t *p, uint8_t num) 
+void ServoDigital::executeInstruction(uint8_t *p, uint8_t num)
 {
     uint8_t err;
     uint8_t i;
@@ -527,17 +527,17 @@ void SERVO_D::executeInstruction(uint8_t *p, uint8_t num)
     AX_TXD;
     for (i = 0; i < num; i++)
     {
-        while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET);
-        USART_SendData(SERVO_Control_USART, *p++);
+        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
+        USART_SendData(SERVO_CONTROL_USART, *p++);
     }
-    while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET);
+    while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
     //Rec
     AX_RXD;
     if (RxPacket(DEFAULT_RETURN_PACKET_SIZE) == DEFAULT_RETURN_PACKET_SIZE)
         err = OK;
     else
         err = NoSuchServo;
-    Packet_Reply_AX(SERVO_Debug_USART, err, PNULL, 0);
+    packageReplyToDebug(SERVO_DEBUG_USART, err, PNULL, 0);
 
 }
 
@@ -573,11 +573,11 @@ void SERVO_D::executeInstruction(uint8_t *p, uint8_t num)
         while(NewKeyActionFlag != 1)
             ;
         for (j = 0; j <packageLength; j++) {
-            while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET)
+            while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET)
                 ;
-            USART_SendData(SERVO_Control_USART, *p++);
+            USART_SendData(SERVO_CONTROL_USART, *p++);
         }
-        while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET)
+        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET)
             ;
         NewKeyActionFlag = 0;
     }
@@ -586,7 +586,7 @@ void SERVO_D::executeInstruction(uint8_t *p, uint8_t num)
 *********************/
 
 
-void SERVO_D::TxPacketBroadSynWrite(uint8_t bInstruction, uint8_t bParameterLength) {
+void ServoDigital::TxPacketBroadSynWrite(uint8_t bInstruction, uint8_t bParameterLength) {
     uint8_t bCount, bPacketLength;
     gbpTxBuffer[0] = 0xff;
     gbpTxBuffer[1] = 0xff;
@@ -597,19 +597,19 @@ void SERVO_D::TxPacketBroadSynWrite(uint8_t bInstruction, uint8_t bParameterLeng
     for (bCount = 0; bCount < bParameterLength; bCount++) {
         gbpTxBuffer[bCount + 5] = gbpParameter[bCount];
     }
-    bPacketLength = bParameterLength + 5;											 //可能有问题
+    bPacketLength = bParameterLength + 5;	//可能有问题
 
     AX_TXD;
     for (bCount = 0; bCount < bPacketLength; bCount++) {
-        while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET);
-        USART_SendData(SERVO_Control_USART, gbpTxBuffer[bCount]);
+        while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
+        USART_SendData(SERVO_CONTROL_USART, gbpTxBuffer[bCount]);
     }
-    while (USART_GetFlagStatus(SERVO_Control_USART, USART_FLAG_TC) == RESET);
+    while (USART_GetFlagStatus(SERVO_CONTROL_USART, USART_FLAG_TC) == RESET);
     AX_RXD;
 }
 
 
-void SERVO_D::changeServoID(uint8_t *p, uint8_t num)
+void ServoDigital::changeServoID(uint8_t *p, uint8_t num)
 {
     gbpParameter[0] = P_ID; //舵机ID地址
     gbpParameter[1] = *p;
@@ -618,13 +618,12 @@ void SERVO_D::changeServoID(uint8_t *p, uint8_t num)
         getServoConnective();
     }
     else{
-        // Packet_Reply_AX(SERVO_Debug_USART, CheckError, (void *)0, 0);
+        // packageReplyToDebug(SERVO_DEBUG_USART, CheckError, (void *)0, 0);
     }
 }
 
-
-uint8_t SERVO_D::axSendSpeed(uint8_t bID, uint16_t target_speed)
-///发送给某一个舵机一个要移动到的位置，包括三个参数 1ID 2位置 3速度
+uint8_t ServoDigital::axSendSpeed(uint8_t bID, uint16_t target_speed)
+//发送给某一个舵机一个要移动到的位置，包括三个参数 1ID 2位置 3速度
 {
     gbpParameter[0] = P_GOAL_SPEED_L; //Address of Firmware Version
     gbpParameter[3] = target_speed; //Writing Data P_GOAL_SPEED_L
@@ -637,12 +636,12 @@ uint8_t SERVO_D::axSendSpeed(uint8_t bID, uint16_t target_speed)
 }
 
 //length只包含data的长度
-//ff Length_L	  Length_H	 0	 2	   InstrType	****	   Check_Sum
-//InstrType代被回复指令类型，data代表返回数据的指针,length代表要发送的也就是我的下家返回给我的数据长度，要打包送给上位机
-void SERVO_D::Packet_Reply_AX(USART_TypeDef* USARTx, unsigned char InstrType,unsigned char * data, unsigned int length) 						
+//ff Length_L	  Length_H	 0	 2	   command_type	****	   Check_Sum
+//command_type代被回复指令类型，data代表返回数据的指针,length代表要发送的也就是我的下家返回给我的数据长度，要打包送给上位机
+void ServoDigital::packageReplyToDebug(USART_TypeDef* USARTx, unsigned char command_type,unsigned char * data, unsigned int length)
 {		
 
-#if SYSTEM_SUPPORT_Servo_Debug ==1
+#if SERVO_DEBUG_EN ==1
 
     unsigned char Length_H, Length_L, Check_Sum = 0;
     unsigned int j = 0;
@@ -668,8 +667,8 @@ void SERVO_D::Packet_Reply_AX(USART_TypeDef* USARTx, unsigned char InstrType,uns
     Check_Sum = Check_Sum + 2;
 
     while (USART_GetFlagStatus(USARTx, USART_FLAG_TC) == RESET);
-    USART_SendData(USARTx, InstrType); //代表指令类型
-    Check_Sum = Check_Sum + InstrType;
+    USART_SendData(USARTx, command_type); //代表指令类型
+    Check_Sum = Check_Sum + command_type;
 
     //发送有效数据
     for (j = 0; j < length; j++)

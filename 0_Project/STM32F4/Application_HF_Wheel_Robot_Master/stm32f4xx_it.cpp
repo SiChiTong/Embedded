@@ -30,9 +30,11 @@ void USART1_IRQHandler(void)
 #endif
     if(USART1->SR&(1<<5))
     {
-        data=USART1->DR;
-        hf_link.HF_Link_Receive_Byte(data);
-        USART_ClearITPendingBit(USART1, USART_IT_RXNE);   // clear interrupt flag
+			data=USART1->DR;
+			if(usart1_queue.fullCheck()==0){
+			 usart1_queue.putData(data);
+			}		  
+			USART_ClearITPendingBit(USART1, USART_IT_RXNE);   // clear interrupt flag
     }
 #if SYSTEM_SUPPORT_OS == 1
     OSIntExit();
@@ -48,13 +50,14 @@ void USART2_IRQHandler(void)
     if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
     {
         data = USART_ReceiveData(USART2);
-        sbus.Sbus_IRQ(data);
+        sbus.receiveByteAnl(data);
         USART_ClearITPendingBit(USART2, USART_IT_RXNE);  // clear interrupt flag
     }
 #if SYSTEM_SUPPORT_OS == 1
     OSIntExit();
 #endif	
 }
+
 
 void USART3_IRQHandler(void)
 {
@@ -89,6 +92,26 @@ void TIM6_DAC_IRQHandler(void)
         system_data.cnt_50ms++;
         TIM_ClearITPendingBit(TIM6 , TIM_FLAG_Update);     // clear interrupt flag
     }
+#if SYSTEM_SUPPORT_OS == 1
+    OSIntExit();
+#endif
+}
+   
+
+void HardFault_Handler(void)
+{
+	 unsigned char i;
+#if SYSTEM_SUPPORT_OS == 1
+    OSIntEnter();
+#endif
+	for(i=0;i<10;i++)
+	{ 
+		BEEP0_TOGGLE();
+		delay_ms(100);
+	}
+//	__disable_fault_irq();     //¸´Î»
+//	NVIC_SystemReset();
+	
 #if SYSTEM_SUPPORT_OS == 1
     OSIntExit();
 #endif

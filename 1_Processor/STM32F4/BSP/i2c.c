@@ -24,8 +24,6 @@ extern "C" {
 #include "i2c.h"
 #include "nvic.h"
 
-#if BSP_CFG_I2C_EN > 0u	 
-
 /***********************************************************************************************************************
 * Function:     void HF_Hardware_I2C_Init(I2C_TypeDef *I2Cx , uint8_t GPIO_AF) 
 *
@@ -40,7 +38,6 @@ extern "C" {
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_Hardware_I2C_Init(I2C_TypeDef *I2Cx , uint8_t GPIO_AF)
 {
@@ -64,7 +61,6 @@ void HF_Hardware_I2C_Init(I2C_TypeDef *I2Cx , uint8_t GPIO_AF)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void Hardware_I2C_Write_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8_t REG_Address,uint8_t REG_data)
 {
@@ -89,7 +85,6 @@ void Hardware_I2C_Write_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 
 uint8_t Hardware_I2C_Read_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uint8_t REG_Address)
@@ -115,7 +110,6 @@ uint8_t Hardware_I2C_Read_Byte(I2C_TypeDef *I2Cx , uint8_t Equipment_Address,uin
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 int Hardware_I2C_Write_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
                            ,uint8_t REG_Address,uint8_t *ptChar,uint8_t size)
@@ -140,7 +134,6 @@ int Hardware_I2C_Write_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 int Hardware_I2C_Read_Buf(I2C_TypeDef *I2Cx , uint8_t Equipment_Address
                           ,uint8_t REG_Address,uint8_t * ptChar,uint8_t size)
@@ -487,8 +480,6 @@ void HF_Simulat_I2C_Init(uint8_t HF_I2Cx)
     }
 
 }
-
-#endif    //#if BSP_CFG_I2C_EN > 0u	 
 
 #ifdef __cplusplus
 }

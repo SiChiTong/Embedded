@@ -22,8 +22,6 @@ extern "C" {
 #include "can.h"
 #include "nvic.h"
 
-#if BSP_CFG_CAN_EN > 0u	 
-
 /***********************************************************************************************************************
 ***                                                                                                                  ***
 ***                                          CAN Interrupt Config                                                    ***
@@ -60,8 +58,6 @@ extern "C" {
 * Scope:        public
 *
 * Description:  can1 initialization
-
-
 *
 * Arguments:
 *
@@ -70,7 +66,6 @@ extern "C" {
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void HF_Can_Init(CAN_TypeDef *CANx , unsigned char GPIO_AF)
 {
@@ -183,8 +178,6 @@ void HF_Can_Init(CAN_TypeDef *CANx , unsigned char GPIO_AF)
 * Scope:        public
 *
 * Description:  CAN Send one Message
-
-
 *
 * Arguments:
 *
@@ -193,7 +186,6 @@ void HF_Can_Init(CAN_TypeDef *CANx , unsigned char GPIO_AF)
 * Cpu_Time:  
 *
 * History:
-* by   mawenke   2015.12.1   creat
 ***********************************************************************************************************************/
 void Can_Tx_Message(CAN_TypeDef* CANx , uint8_t Sender_ID  , uint8_t Receiver_ID , uint8_t *TxBuf , uint8_t Length)
 {
@@ -215,9 +207,6 @@ void Can_Tx_Message(CAN_TypeDef* CANx , uint8_t Sender_ID  , uint8_t Receiver_ID
     CAN_Transmit(CANx, &TxMessageBuffer);
     
 }	
-
-
-#endif   //#if BSP_CFG_CAN_EN > 0u	
 
 #ifdef __cplusplus
 }
