@@ -26,5 +26,8 @@ del *.htm /s
 del *.sct /s
 del *.map /s
 del *.hex /s
+del *.mawenke /s
+del *.uvoptx /s
+
 
 exit
