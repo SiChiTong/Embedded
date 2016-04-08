@@ -24,5 +24,6 @@ JLinkLog.txt
 *.sct 
 *.map 
 *.hex 
-*.mawenke
+*.mawenke 
 *.uvoptx
+ 
